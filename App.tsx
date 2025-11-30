@@ -10,6 +10,11 @@ import StepResults from './components/StepResults';
 
 // Initial Empty State
 const initialState: CalculatorState = {
+  meta: {
+    scope: 'batch',
+    startDate: new Date().toISOString().split('T')[0], // Default to today
+    endDate: new Date().toISOString().split('T')[0],   // Default to today
+  },
   materials: {
     farmerCotton: { weight: 0, farmArea: 0 },
     scGrand: { weight: 0 },
@@ -45,7 +50,16 @@ function App() {
     const saved = localStorage.getItem('folkcharm_calc_state');
     if (saved) {
       try {
-        setData(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        // Ensure meta exists and has new fields for backward compatibility
+        if (!parsed.meta) {
+            parsed.meta = initialState.meta;
+        } else if (!parsed.meta.startDate) {
+            // Migration for old state that only had 'date'
+            parsed.meta.startDate = parsed.meta.date || initialState.meta.startDate;
+            parsed.meta.endDate = parsed.meta.date || initialState.meta.endDate;
+        }
+        setData(parsed);
       } catch (e) {
         console.error("Failed to load saved state", e);
       }
@@ -78,8 +92,20 @@ function App() {
     goToStep(currentIndex - 1);
   };
 
+  const handleRestart = () => {
+    setData(initialState);
+    setCurrentStep('home');
+    window.scrollTo(0, 0);
+  };
+
   const renderStep = () => {
-    const props = { data, updateData, onNext: handleNext, onBack: handleBack };
+    const props = { 
+      data, 
+      updateData, 
+      onNext: handleNext, 
+      onBack: handleBack,
+      onRestart: handleRestart
+    };
     
     switch (currentStep) {
       case 'home': return <StepHome {...props} />;

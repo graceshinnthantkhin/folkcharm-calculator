@@ -1,10 +1,10 @@
 # Folkcharm Supply Chain Calculator
 
-A comprehensive, privacy-first React application designed to calculate Scope 3 Carbon Footprint, verify Fair Wages, and track production batch composition for Folkcharm's supply chain.
+A comprehensive, privacy-first React application designed to calculate Scope 3 Carbon Footprint and track production batch composition for Folkcharm's supply chain.
 
 ## 📋 Overview
 
-The Folkcharm Calculator is a **5-step wizard** that collects specific production data to generate an environmental and social impact report. It is designed as a client-side Single Page Application (SPA), ensuring that sensitive supply chain data remains local to the user's device until explicitly exported.
+The Folkcharm Calculator is a **5-step wizard** that collects specific production data to generate an environmental impact report. It is designed as a client-side Single Page Application (SPA), ensuring that sensitive supply chain data remains local to the user's device until explicitly exported.
 
 ### Key Features
 
@@ -13,7 +13,6 @@ The Folkcharm Calculator is a **5-step wizard** that collects specific productio
     *   **Logistics**: Transport emissions based on vehicle type (Light/Heavy) and distance.
     *   **Production**: Energy consumption (Thai Grid) and accessory usage.
     *   **Delivery**: Final transport emissions to the customer/retailer.
-*   **Social Impact Verification**: Calculates fair wages paid based on sewing hours and production quantity.
 *   **Privacy-First**: All calculations occur in the browser. Data is persisted via `localStorage` for convenience but is not sent to any external server.
 *   **PDF Export**: Built-in "Print to PDF" functionality generates a clean, formal report for internal records.
 
@@ -72,7 +71,7 @@ This will generate a `dist` folder containing the static files ready for deploym
 │   │   ├── Step*.tsx    # Individual wizard steps
 │   │   └── ...
 │   ├── utils/
-│   │   └── calculator.ts # Core logic for emissions & wage math
+│   │   └── calculator.ts # Core logic for emissions math
 │   ├── App.tsx          # Main routing and state management
 │   ├── constants.ts     # Emission factors and static values
 │   ├── types.ts         # TypeScript interfaces and data models
@@ -92,7 +91,6 @@ The application uses specific emission factors defined in `src/constants.ts`.
     *   *Heavy Vehicle EF*: 0.129 kg CO₂/tkm
 *   **Electricity**: `Hours × 0.25 kW (Machine Power) × 0.399 kg CO₂/kWh (Thai Grid)`
 *   **SC Grand Yarn**: Fixed factor of 0.35 kg CO₂e/kg.
-*   **Fair Wages**: `Sewing Hours × 60 THB/hour`.
 
 ## 📄 License
 

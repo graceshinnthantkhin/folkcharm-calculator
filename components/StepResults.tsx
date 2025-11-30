@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StepProps } from '../types';
-import { Button, Card } from './ui/Components';
+import { Button, Card, Input } from './ui/Components';
 import { calculateResults } from '../utils/calculator';
-import { RefreshCcw, Download, CheckCircle, Leaf, Users, Shirt, Truck, Factory, FileCheck } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { RefreshCcw, Download, CheckCircle, Leaf, Truck, Factory, Scale, Calendar, FileText, Tag, Calculator } from 'lucide-react';
+import { BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Bar } from 'recharts';
 
-const StepResults: React.FC<StepProps> = ({ data, onBack }) => {
+const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
   const results = useMemo(() => calculateResults(data), [data]);
+  const [productWeightInput, setProductWeightInput] = useState<string>('');
 
   const chartData = [
     { name: 'Materials', value: results.emissions.materials, color: '#47634d' }, 
@@ -15,42 +16,102 @@ const StepResults: React.FC<StepProps> = ({ data, onBack }) => {
     { name: 'Delivery', value: results.emissions.delivery, color: '#94b69a' }, 
   ];
 
-  const handleRestart = () => {
-    // Clear the persisted state so the app reloads with initial state
-    localStorage.removeItem('folkcharm_calc_state');
-    window.location.reload();
-  };
-
   const formatNumber = (num: number) => num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Calculate specific product emission based on input
+  const singleProductEmission = useMemo(() => {
+    const weight = parseFloat(productWeightInput);
+    if (isNaN(weight) || weight <= 0) return 0;
+    return weight * results.productionStats.emissionPerKg;
+  }, [productWeightInput, results.productionStats.emissionPerKg]);
+
+  // Format date based on scope and range
+  const formattedDate = useMemo(() => {
+    const { startDate, endDate, scope } = data.meta;
+    if (!startDate || !endDate) return 'N/A';
+
+    const formatDate = (dateStr: string) => {
+      const parts = dateStr.split('-');
+      const year = parseInt(parts[0]);
+      const month = parseInt(parts[1]);
+      
+      if (isNaN(year) || isNaN(month)) return dateStr;
+
+      if (scope === 'monthly') {
+        // Create date for the 1st of the month. Note: Month is 0-indexed in JS Date
+        const dateObj = new Date(year, month - 1);
+        return dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      }
+      
+      const day = parseInt(parts[2]);
+      if (isNaN(day)) return dateStr;
+      
+      const dateObj = new Date(year, month - 1, day);
+      return dateObj.toLocaleDateString('en-US', { dateStyle: 'medium' });
+    };
+
+    const start = formatDate(startDate);
+    const end = formatDate(endDate);
+
+    if (start === end) return start;
+    return `${start} — ${end}`;
+  }, [data.meta]);
+
+  const reportTitle = data.meta.scope === 'monthly' ? 'Monthly Production Report' : 'Production Batch Report';
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-500 pb-20">
-      <div className="text-center mb-8">
+      
+      {/* Print Header - Visible only when printing */}
+      <div className="hidden print:block text-center mb-8 border-b border-gray-300 pb-4">
+        <h1 className="text-2xl font-bold text-gray-900">Folkcharm Supply Chain - {reportTitle}</h1>
+        <div className="flex justify-center gap-6 text-sm text-gray-600 mt-2">
+            <span><strong>Period:</strong> {formattedDate}</span>
+            <span><strong>Generated:</strong> {new Date().toLocaleDateString()}</span>
+        </div>
+      </div>
+
+      {/* Screen Header - Hidden when printing */}
+      <div className="print:hidden text-center mb-8">
         <div className="inline-flex items-center justify-center p-3 bg-emerald-100 rounded-full text-emerald-700 mb-4">
           <CheckCircle size={32} />
         </div>
         <h2 className="text-3xl font-bold text-gray-900">Calculation Complete</h2>
-        <p className="text-gray-500 mt-2">Here is the comprehensive breakdown of your batch.</p>
+        <div className="flex items-center justify-center gap-2 mt-2 text-gray-500">
+            <Calendar size={16} /> 
+            <span>{formattedDate}</span>
+            <span className="mx-1">•</span>
+            <FileText size={16} />
+            <span className="capitalize">{data.meta.scope} Report</span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-6">
         {/* Card A: Environmental Impact */}
-        <Card className="border-t-4 border-t-emerald-700">
-           <div className="flex justify-between items-start mb-6">
+        <Card className="border-t-4 border-t-emerald-700 break-inside-avoid">
+           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-6">
               <div>
                 <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                   <Leaf className="text-emerald-600" size={20}/> Environmental Impact
                 </h3>
-                <p className="text-sm text-gray-500">Scope 3 Carbon Footprint</p>
+                <p className="text-sm text-gray-500">Scope 3 Carbon Footprint Analysis</p>
               </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-gray-900">{formatNumber(results.emissions.total)}</p>
-                <p className="text-xs text-gray-500 uppercase font-semibold">kg CO₂e Total</p>
+              
+              <div className="flex gap-6 w-full md:w-auto bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <div className="text-right flex-1 md:flex-initial">
+                  <p className="text-3xl font-bold text-gray-900">{formatNumber(results.emissions.total)}</p>
+                  <p className="text-xs text-gray-500 uppercase font-semibold">kg CO₂e Total</p>
+                </div>
+                <div className="w-px bg-gray-300 self-stretch"></div>
+                <div className="text-right flex-1 md:flex-initial">
+                   <p className="text-3xl font-bold text-emerald-600">{formatNumber(results.productionStats.emissionPerKg)}</p>
+                   <p className="text-xs text-emerald-600 uppercase font-semibold">kg CO₂e / kg Product</p>
+                </div>
               </div>
            </div>
 
            {/* Chart */}
-           <div className="h-48 mb-6">
+           <div className="h-48 mb-6 print:h-64">
              <ResponsiveContainer width="100%" height="100%">
                <BarChart data={chartData} layout="vertical" margin={{ left: 0, right: 20 }}>
                  <XAxis type="number" hide />
@@ -69,77 +130,87 @@ const StepResults: React.FC<StepProps> = ({ data, onBack }) => {
            </div>
 
            {/* List Breakdown */}
-           <div className="space-y-3 text-sm">
-             <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+             <div className="flex justify-between items-center p-3 bg-gray-50 rounded print:border print:border-gray-100">
                <span className="flex items-center gap-2 text-gray-700"><SproutIcon className="w-4 h-4 text-emerald-700"/> Materials</span>
                <span className="font-semibold text-gray-900">{formatNumber(results.emissions.materials)} kg</span>
              </div>
-             <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+             <div className="flex justify-between items-center p-3 bg-gray-50 rounded print:border print:border-gray-100">
                <span className="flex items-center gap-2 text-gray-700"><Truck className="w-4 h-4 text-emerald-600"/> Logistics</span>
                <span className="font-semibold text-gray-900">{formatNumber(results.emissions.logistics)} kg</span>
              </div>
-             <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+             <div className="flex justify-between items-center p-3 bg-gray-50 rounded print:border print:border-gray-100">
                <span className="flex items-center gap-2 text-gray-700"><Factory className="w-4 h-4 text-emerald-500"/> Production</span>
                <span className="font-semibold text-gray-900">{formatNumber(results.emissions.production)} kg</span>
              </div>
-             <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+             <div className="flex justify-between items-center p-3 bg-gray-50 rounded print:border print:border-gray-100">
                <span className="flex items-center gap-2 text-gray-700"><Truck className="w-4 h-4 text-emerald-400"/> Delivery</span>
                <span className="font-semibold text-gray-900">{formatNumber(results.emissions.delivery)} kg</span>
              </div>
            </div>
+           
+           <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
+              <span className="flex items-center gap-1"><Scale size={14}/> Total Weight</span>
+              <span className="font-mono">{formatNumber(results.productionStats.totalWeight)} kg</span>
+           </div>
         </Card>
 
-        {/* Card B: Social Impact */}
-        <Card className="border-t-4 border-t-amber-500">
-          <div className="mb-6">
-            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <Users className="text-amber-500" size={20}/> Social Impact
-            </h3>
-            <p className="text-sm text-gray-500">Fair Wages</p>
-          </div>
+        {/* Product Calculator - Print Hidden, Interactive Tool */}
+        <div className="print:hidden">
+            <Card className="border-l-4 border-l-blue-500 bg-blue-50/30">
+                <div className="flex items-start gap-4">
+                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600 hidden sm:block">
+                        <Calculator size={24} />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-lg font-bold text-gray-900 mb-1">Product Impact Calculator</h3>
+                        <p className="text-sm text-gray-500 mb-4">
+                            Estimate the carbon footprint of a specific item (e.g., one shirt) based on the emission intensity of this batch.
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row items-end gap-4">
+                             <div className="w-full sm:w-48">
+                                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                                    Item Weight
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="0.00"
+                                        className="w-full pl-3 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        value={productWeightInput}
+                                        onChange={(e) => setProductWeightInput(e.target.value)}
+                                    />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">kg</span>
+                                </div>
+                             </div>
 
-          <div className="space-y-6">
-            <div className="text-center p-6 bg-amber-50 rounded-xl border border-amber-100">
-               <p className="text-sm text-amber-800 font-medium mb-1">Total Fair Wages Paid</p>
-               <p className="text-4xl font-bold text-amber-900">฿{formatNumber(results.social.wages)}</p>
-               <p className="text-xs text-amber-700 mt-2">Based on {results.social.hoursVerified} sewing hours</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-gray-50 rounded-lg text-center">
-                <Shirt className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-                <p className="text-xl font-bold text-gray-800">{results.social.itemCount}</p>
-                <p className="text-xs text-gray-500">Items Produced</p>
-              </div>
-              <div className={`p-4 rounded-lg text-center border ${data.production.logbookFile ? 'bg-emerald-50 border-emerald-100' : 'bg-gray-50 border-transparent'}`}>
-                {data.production.logbookFile ? (
-                   <>
-                     <FileCheck className="w-6 h-6 mx-auto mb-2 text-emerald-500" />
-                     <p className="text-sm font-bold text-emerald-800">Verified</p>
-                     <p className="text-xs text-emerald-600 truncate max-w-full px-1">{data.production.logbookFile}</p>
-                   </>
-                ) : (
-                   <>
-                     <FileCheck className="w-6 h-6 mx-auto mb-2 text-gray-300" />
-                     <p className="text-sm font-bold text-gray-400">Not Verified</p>
-                     <p className="text-xs text-gray-400">No Logbook</p>
-                   </>
-                )}
-              </div>
-            </div>
-          </div>
-        </Card>
+                             <div className="flex-1 bg-white p-3 rounded-lg border border-blue-100 flex items-center justify-between shadow-sm w-full">
+                                <span className="text-sm text-gray-600 flex items-center gap-2">
+                                    <Tag size={16} /> Est. Footprint:
+                                </span>
+                                <span className="text-xl font-bold text-blue-700">
+                                    {formatNumber(singleProductEmission)} <span className="text-xs font-normal text-blue-500">kg CO₂e</span>
+                                </span>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </Card>
+        </div>
       </div>
 
-      <div className="flex justify-center gap-4 mt-8">
+      <div className="flex justify-center gap-4 mt-8 print:hidden">
         <Button variant="outline" onClick={onBack}>
           Back to Edit
         </Button>
         <Button variant="secondary" onClick={() => window.print()}>
           <Download className="mr-2 w-4 h-4" /> Export PDF
         </Button>
-        <Button onClick={handleRestart}>
-          <RefreshCcw className="mr-2 w-4 h-4" /> Start New Batch
+        <Button onClick={onRestart}>
+          <RefreshCcw className="mr-2 w-4 h-4" /> Start New Calculation
         </Button>
       </div>
     </div>

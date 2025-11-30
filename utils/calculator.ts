@@ -7,7 +7,6 @@ import {
   WEIGHT_ACCESSORY_PER_ITEM_KG,
   EF_ACCESSORY,
   POWER_SEWING_MACHINE_KW,
-  WAGE_RATE_THB_PER_HOUR,
   PLACEHOLDER_SOC_EMISSIONS_PER_HA
 } from '../constants';
 
@@ -19,13 +18,9 @@ export interface CalculationResults {
     delivery: number;
     total: number;
   };
-  social: {
-    wages: number;
-    hoursVerified: number;
-    itemCount: number;
-  };
   productionStats: {
     totalWeight: number;
+    emissionPerKg: number;
   };
 }
 
@@ -98,8 +93,8 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
   // 5. Total
   const grandTotalEmissions = totalMaterialEmissions + totalLogisticsEmissions + totalProductionEmissions + totalDeliveryEmissions;
 
-  // 6. Social Impact
-  const fairWages = production.sewingHours * WAGE_RATE_THB_PER_HOUR;
+  // 6. Intensity (Per Kg)
+  const emissionPerKg = totalWeightKg > 0 ? grandTotalEmissions / totalWeightKg : 0;
 
   return {
     emissions: {
@@ -109,13 +104,9 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
       delivery: totalDeliveryEmissions,
       total: grandTotalEmissions,
     },
-    social: {
-      wages: fairWages,
-      hoursVerified: production.sewingHours,
-      itemCount: production.itemQuantity,
-    },
     productionStats: {
       totalWeight: totalWeightKg,
+      emissionPerKg: emissionPerKg,
     }
   };
 };

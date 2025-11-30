@@ -21,7 +21,16 @@ export interface LogisticsData {
   leftoverToFolkcharm: TransportLeg;
 }
 
+export type CalculationScope = 'batch' | 'monthly';
+
 export interface CalculatorState {
+  // Meta: Scope and Date Range
+  meta: {
+    scope: CalculationScope;
+    startDate: string;
+    endDate: string;
+  };
+
   // Step 1: Materials
   materials: {
     farmerCotton: {
@@ -60,4 +69,5 @@ export interface StepProps {
   updateData: (updates: Partial<CalculatorState>) => void;
   onNext: () => void;
   onBack: () => void;
+  onRestart?: () => void;
 }

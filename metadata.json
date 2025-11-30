@@ -1,5 +1,5 @@
 {
   "name": "Folkcharm Supply Chain Calculator",
-  "description": "A comprehensive 5-step wizard to calculate Scope 3 Carbon Footprint, Fair Wages, and production data for Folkcharm's supply chain.",
+  "description": "A comprehensive 5-step wizard to calculate Scope 3 Carbon Footprint and production data for Folkcharm's supply chain.",
   "requestFramePermissions": []
 }
