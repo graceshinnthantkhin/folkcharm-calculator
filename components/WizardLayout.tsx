@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { StepId } from '../types';
 
@@ -10,7 +11,6 @@ const steps: { id: StepId; label: string }[] = [
   { id: 'materials', label: 'Materials' },
   { id: 'logistics', label: 'Logistics' },
   { id: 'production', label: 'Production' },
-  { id: 'delivery', label: 'Delivery' },
   { id: 'results', label: 'Results' },
 ];
 
@@ -21,8 +21,8 @@ const WizardLayout: React.FC<WizardLayoutProps> = ({ currentStep, children }) =>
 
   return (
     <div className="min-h-screen flex flex-col bg-emerald-50 font-sans text-gray-900">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      {/* Header - Increased z-index to 50 to prevent content scrolling over it */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-emerald-700 rounded-lg flex items-center justify-center text-white font-bold text-lg">
@@ -51,7 +51,7 @@ const WizardLayout: React.FC<WizardLayoutProps> = ({ currentStep, children }) =>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8 md:py-12">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8 md:py-12 relative z-0">
         {children}
       </main>
 

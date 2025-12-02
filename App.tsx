@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { CalculatorState, StepId, VehicleType } from './types';
 import WizardLayout from './components/WizardLayout';
@@ -5,7 +6,6 @@ import StepHome from './components/StepHome';
 import StepMaterials from './components/StepMaterials';
 import StepLogistics from './components/StepLogistics';
 import StepProduction from './components/StepProduction';
-import StepDelivery from './components/StepDelivery';
 import StepResults from './components/StepResults';
 
 // Initial Empty State
@@ -32,14 +32,10 @@ const initialState: CalculatorState = {
     itemQuantity: 0,
     logbookFile: undefined,
   },
-  delivery: {
-    finalDistance: 0,
-    vehicleType: '' as VehicleType,
-  },
 };
 
 // Steps order
-const STEP_ORDER: StepId[] = ['home', 'materials', 'logistics', 'production', 'delivery', 'results'];
+const STEP_ORDER: StepId[] = ['home', 'materials', 'logistics', 'production', 'results'];
 
 function App() {
   const [currentStep, setCurrentStep] = useState<StepId>('home');
@@ -58,6 +54,10 @@ function App() {
             // Migration for old state that only had 'date'
             parsed.meta.startDate = parsed.meta.date || initialState.meta.startDate;
             parsed.meta.endDate = parsed.meta.date || initialState.meta.endDate;
+        }
+        // Remove delivery from state if it exists from previous versions
+        if ('delivery' in parsed) {
+          delete parsed.delivery;
         }
         setData(parsed);
       } catch (e) {
@@ -112,7 +112,6 @@ function App() {
       case 'materials': return <StepMaterials {...props} />;
       case 'logistics': return <StepLogistics {...props} />;
       case 'production': return <StepProduction {...props} />;
-      case 'delivery': return <StepDelivery {...props} />;
       case 'results': return <StepResults {...props} />;
       default: return <StepHome {...props} />;
     }

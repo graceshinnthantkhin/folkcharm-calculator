@@ -1,8 +1,9 @@
+
 import React, { useMemo, useState } from 'react';
 import { StepProps } from '../types';
-import { Button, Card, Input } from './ui/Components';
+import { Button, Card } from './ui/Components';
 import { calculateResults } from '../utils/calculator';
-import { RefreshCcw, Download, CheckCircle, Leaf, Truck, Factory, Scale, Calendar, FileText, Tag, Calculator } from 'lucide-react';
+import { RefreshCcw, Download, CheckCircle, Leaf, Truck, Factory, Scale, Calendar, FileText, Tag, Calculator, Package } from 'lucide-react';
 import { BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Bar } from 'recharts';
 
 const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
@@ -13,7 +14,6 @@ const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
     { name: 'Materials', value: results.emissions.materials, color: '#47634d' }, 
     { name: 'Logistics', value: results.emissions.logistics, color: '#587c5f' }, 
     { name: 'Production', value: results.emissions.production, color: '#729979' }, 
-    { name: 'Delivery', value: results.emissions.delivery, color: '#94b69a' }, 
   ];
 
   const formatNumber = (num: number) => num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -111,7 +111,7 @@ const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
            </div>
 
            {/* Chart */}
-           <div className="h-48 mb-6 print:h-64">
+           <div className="h-40 mb-6 print:h-48">
              <ResponsiveContainer width="100%" height="100%">
                <BarChart data={chartData} layout="vertical" margin={{ left: 0, right: 20 }}>
                  <XAxis type="number" hide />
@@ -130,7 +130,7 @@ const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
            </div>
 
            {/* List Breakdown */}
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
              <div className="flex justify-between items-center p-3 bg-gray-50 rounded print:border print:border-gray-100">
                <span className="flex items-center gap-2 text-gray-700"><SproutIcon className="w-4 h-4 text-emerald-700"/> Materials</span>
                <span className="font-semibold text-gray-900">{formatNumber(results.emissions.materials)} kg</span>
@@ -143,10 +143,6 @@ const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
                <span className="flex items-center gap-2 text-gray-700"><Factory className="w-4 h-4 text-emerald-500"/> Production</span>
                <span className="font-semibold text-gray-900">{formatNumber(results.emissions.production)} kg</span>
              </div>
-             <div className="flex justify-between items-center p-3 bg-gray-50 rounded print:border print:border-gray-100">
-               <span className="flex items-center gap-2 text-gray-700"><Truck className="w-4 h-4 text-emerald-400"/> Delivery</span>
-               <span className="font-semibold text-gray-900">{formatNumber(results.emissions.delivery)} kg</span>
-             </div>
            </div>
            
            <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
@@ -154,6 +150,26 @@ const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
               <span className="font-mono">{formatNumber(results.productionStats.totalWeight)} kg</span>
            </div>
         </Card>
+
+        {/* Sustainability Impact: SC Grand Savings */}
+        {results.savings.scGrand > 0 && (
+          <Card className="border-l-4 border-l-blue-500 bg-blue-50/20 break-inside-avoid">
+            <div className="flex gap-4">
+              <div className="p-2 bg-blue-100 text-blue-600 rounded-lg h-fit hidden sm:block">
+                 <Leaf size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Avoided Emissions</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  By using recycled SC Grand Yarn instead of virgin cotton (4.1 kg CO₂e/kg), you avoided:
+                </p>
+                <p className="text-2xl font-bold text-blue-700 mt-2">
+                  -{formatNumber(results.savings.scGrand)} kg CO₂e
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Product Calculator - Print Hidden, Interactive Tool */}
         <div className="print:hidden">

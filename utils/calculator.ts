@@ -1,3 +1,4 @@
+
 import { CalculatorState, VehicleType } from '../types';
 import {
   EF_TRANSPORT,
@@ -7,7 +8,8 @@ import {
   WEIGHT_ACCESSORY_PER_ITEM_KG,
   EF_ACCESSORY,
   POWER_SEWING_MACHINE_KW,
-  PLACEHOLDER_SOC_EMISSIONS_PER_HA
+  PLACEHOLDER_SOC_EMISSIONS_PER_HA,
+  EF_VIRGIN_COTTON
 } from '../constants';
 
 export interface CalculationResults {
@@ -15,27 +17,30 @@ export interface CalculationResults {
     materials: number;
     logistics: number;
     production: number;
-    delivery: number;
     total: number;
   };
   productionStats: {
     totalWeight: number;
     emissionPerKg: number;
   };
+  savings: {
+    scGrand: number;
+  };
 }
 
 // Helper to calculate transport emission: Weight (tons) * Distance (km) * Factor
-const calcTransport = (weightKg: number, distanceKm: number, type: VehicleType): number => {
+const calcTransport = (weightKg: number, distanceKm: number, type: VehicleType | ''): number => {
+  if (isNaN(distanceKm) || distanceKm === 0 || !type) return 0;
   const weightTons = weightKg / 1000;
-  const factor = EF_TRANSPORT[type];
+  const factor = EF_TRANSPORT[type as VehicleType] || 0;
   return weightTons * distanceKm * factor;
 };
 
 export const calculateResults = (data: CalculatorState): CalculationResults => {
-  const { materials, logistics, production, delivery } = data;
+  const { materials, logistics, production } = data;
 
   // 1. Materials Emissions
-  // Farmer Cotton: Based on Area * SOC Factor (Placeholder used as formula not fully specified)
+  // Farmer Cotton: Based on Area * SOC Factor
   const farmerCottonEmissions = materials.farmerCotton.farmArea * PLACEHOLDER_SOC_EMISSIONS_PER_HA; 
   
   // SC Grand: Weight * EF
@@ -46,9 +51,15 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
 
   const totalMaterialEmissions = farmerCottonEmissions + scGrandEmissions + leftoverEmissions;
 
+  // SC Grand Savings (Avoided Emissions vs Virgin Cotton)
+  // Savings = Weight * (Virgin EF - Recycled EF)
+  const scGrandSavings = materials.scGrand.weight > 0 
+    ? materials.scGrand.weight * (EF_VIRGIN_COTTON - EF_SC_GRAND_YARN)
+    : 0;
+
   // 2. Logistics Emissions
   // Note: "All weights contribute to logistics load."
-  // However, each route is specific to a material source.
+  // Each route is specific to a material source.
   let totalLogisticsEmissions = 0;
 
   // Route A: Farmer Cotton
@@ -77,23 +88,17 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
 
   const totalProductionEmissions = electricityEmissions + accessoriesEmissions;
 
-  // 4. Delivery Emissions
-  // Total Product Weight: Sum of all inputs + Accessories?
-  // Usually, output weight ≈ input weight. Let's sum raw material weights.
-  // We should conceptually add accessories weight, but the prompt implies "Total production weight" from Page 1 logic.
-  // Page 5 says: Weight_total (tons) * Distance * Vehicle EF
+  // Total Weight Calculation for Stats
   const totalWeightKg = 
     materials.farmerCotton.weight + 
     materials.scGrand.weight + 
     materials.leftover.weight +
-    (production.itemQuantity * WEIGHT_ACCESSORY_PER_ITEM_KG); // Adding accessory weight for accuracy in transport
+    (production.itemQuantity * WEIGHT_ACCESSORY_PER_ITEM_KG);
 
-  const totalDeliveryEmissions = calcTransport(totalWeightKg, delivery.finalDistance, delivery.vehicleType);
+  // 4. Total
+  const grandTotalEmissions = totalMaterialEmissions + totalLogisticsEmissions + totalProductionEmissions;
 
-  // 5. Total
-  const grandTotalEmissions = totalMaterialEmissions + totalLogisticsEmissions + totalProductionEmissions + totalDeliveryEmissions;
-
-  // 6. Intensity (Per Kg)
+  // 5. Intensity (Per Kg)
   const emissionPerKg = totalWeightKg > 0 ? grandTotalEmissions / totalWeightKg : 0;
 
   return {
@@ -101,12 +106,14 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
       materials: totalMaterialEmissions,
       logistics: totalLogisticsEmissions,
       production: totalProductionEmissions,
-      delivery: totalDeliveryEmissions,
       total: grandTotalEmissions,
     },
     productionStats: {
       totalWeight: totalWeightKg,
       emissionPerKg: emissionPerKg,
+    },
+    savings: {
+      scGrand: scGrandSavings
     }
   };
 };

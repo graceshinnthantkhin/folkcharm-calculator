@@ -6,6 +6,19 @@ import { ArrowRight, Leaf, Sprout, Recycle } from 'lucide-react';
 const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Conversion Constants
+  const HA_PER_ACRE = 0.404686;
+  const ACRES_PER_HA = 2.47105;
+
+  // Local state for acres input to ensure smooth typing and display
+  // Initialize from the global HA value (if it exists) converted back to acres
+  const [acresInput, setAcresInput] = useState<string>(() => {
+    const ha = data.materials.farmerCotton.farmArea;
+    if (!ha) return '';
+    // Format to max 2 decimal places for display when loading back from state
+    return parseFloat((ha * ACRES_PER_HA).toFixed(3)).toString();
+  });
+
   const validate = () => {
     const newErrors: Record<string, string> = {};
     const { farmerCotton } = data.materials;
@@ -53,6 +66,36 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
     });
   };
 
+  const handleAcresChange = (val: string) => {
+    setAcresInput(val);
+    const acres = parseFloat(val);
+    
+    if (!isNaN(acres)) {
+      // Convert Acres to Hectares for global state
+      const ha = acres * HA_PER_ACRE;
+      updateData({
+        materials: {
+          ...data.materials,
+          farmerCotton: {
+            ...data.materials.farmerCotton,
+            farmArea: ha
+          }
+        }
+      });
+    } else {
+      // Handle empty or invalid input
+      updateData({
+        materials: {
+          ...data.materials,
+          farmerCotton: {
+            ...data.materials.farmerCotton,
+            farmArea: 0
+          }
+        }
+      });
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="text-center mb-8">
@@ -90,17 +133,24 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
             type="number"
             min="0"
             placeholder="0"
-            suffix="ha"
-            value={data.materials.farmerCotton.farmArea || ''}
-            onChange={(e) => updateMaterial('farmerCotton', 'farmArea', e.target.value)}
+            suffix="acres"
+            value={acresInput}
+            onChange={(e) => handleAcresChange(e.target.value)}
             error={errors.farmArea}
             disabled={!data.materials.farmerCotton.weight}
             className={!data.materials.farmerCotton.weight ? 'opacity-50' : ''}
           />
         </div>
-        <p className="text-xs text-gray-500 mt-2 italic">
-          * Farm Area is used to calculate SOC emissions.
-        </p>
+        <div className="flex justify-between items-start mt-2">
+          <p className="text-xs text-gray-500 italic">
+            * Farm Area is used to calculate SOC emissions.
+          </p>
+          {acresInput && !isNaN(parseFloat(acresInput)) && (
+            <p className="text-xs text-emerald-600 font-medium">
+              ≈ {(parseFloat(acresInput) * HA_PER_ACRE).toFixed(2)} ha
+            </p>
+          )}
+        </div>
       </Card>
 
       {/* B. SC Grand Yarn */}

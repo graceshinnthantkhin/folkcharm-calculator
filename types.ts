@@ -1,3 +1,4 @@
+
 export enum VehicleType {
   LIGHT = 'Light Vehicle',
   HEAVY = 'Heavy Vehicle',
@@ -54,15 +55,9 @@ export interface CalculatorState {
     itemQuantity: number;
     logbookFile?: string;
   };
-
-  // Step 4: Delivery
-  delivery: {
-    finalDistance: number;
-    vehicleType: VehicleType;
-  };
 }
 
-export type StepId = 'home' | 'materials' | 'logistics' | 'production' | 'delivery' | 'results';
+export type StepId = 'home' | 'materials' | 'logistics' | 'production' | 'results';
 
 export interface StepProps {
   data: CalculatorState;

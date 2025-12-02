@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { StepProps } from '../types';
 import { Input, Button, Card } from './ui/Components';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Calculator } from 'lucide-react';
 
 const StepProduction: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -59,8 +60,8 @@ const StepProduction: React.FC<StepProps> = ({ data, updateData, onNext, onBack 
         <Button variant="secondary" onClick={onBack} className="flex-1">
           <ArrowLeft className="mr-2 w-5 h-5" /> Back
         </Button>
-        <Button onClick={handleNext} className="flex-1">
-          Delivery <ArrowRight className="ml-2 w-5 h-5" />
+        <Button onClick={handleNext} className="flex-1 bg-gray-900 hover:bg-black text-white shadow-lg">
+          Calculate Results <Calculator className="ml-2 w-5 h-5" />
         </Button>
       </div>
     </div>

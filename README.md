@@ -4,7 +4,7 @@ A comprehensive, privacy-first React application designed to calculate Scope 3 C
 
 ## 📋 Overview
 
-The Folkcharm Calculator is a **5-step wizard** that collects specific production data to generate an environmental impact report. It is designed as a client-side Single Page Application (SPA), ensuring that sensitive supply chain data remains local to the user's device until explicitly exported.
+The Folkcharm Calculator is a **4-step wizard** that collects specific production data to generate an environmental impact report. It is designed as a client-side Single Page Application (SPA), ensuring that sensitive supply chain data remains local to the user's device until explicitly exported.
 
 ### Key Features
 
@@ -12,7 +12,6 @@ The Folkcharm Calculator is a **5-step wizard** that collects specific productio
     *   **Materials**: Farm-level soil organic carbon (SOC) and material production emissions.
     *   **Logistics**: Transport emissions based on vehicle type (Light/Heavy) and distance.
     *   **Production**: Energy consumption (Thai Grid) and accessory usage.
-    *   **Delivery**: Final transport emissions to the customer/retailer.
 *   **Privacy-First**: All calculations occur in the browser. Data is persisted via `localStorage` for convenience but is not sent to any external server.
 *   **PDF Export**: Built-in "Print to PDF" functionality generates a clean, formal report for internal records.
 

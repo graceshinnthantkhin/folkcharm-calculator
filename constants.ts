@@ -9,6 +9,7 @@ export const EF_TRANSPORT = {
 
 // Materials (kg CO2e / kg)
 export const EF_SC_GRAND_YARN = 0.35;
+export const EF_VIRGIN_COTTON = 4.1; // Added missing constant
 export const EF_LEFTOVER = 0.0;
 // Note: Farmer cotton emissions depend on Farm Area (SOC). 
 // The PDF mentions TVER formulas. Since the exact formula isn't provided in the prompt, 

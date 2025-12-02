@@ -34,7 +34,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
     const checkLeg = (legKey: keyof typeof data.logistics, weight: number) => {
       if (weight > 0) {
         const leg = data.logistics[legKey];
-        if (leg.distance > 0 && !leg.vehicleType) {
+        if (leg.distance >= 0 && !leg.vehicleType) {
           newErrors[`${String(legKey)}Type`] = "Required";
         }
       }
