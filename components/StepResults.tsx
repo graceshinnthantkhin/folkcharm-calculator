@@ -151,26 +151,6 @@ const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
            </div>
         </Card>
 
-        {/* Sustainability Impact: SC Grand Savings */}
-        {results.savings.scGrand > 0 && (
-          <Card className="border-l-4 border-l-blue-500 bg-blue-50/20 break-inside-avoid">
-            <div className="flex gap-4">
-              <div className="p-2 bg-blue-100 text-blue-600 rounded-lg h-fit hidden sm:block">
-                 <Leaf size={24} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">Avoided Emissions</h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  By using recycled SC Grand Yarn instead of virgin cotton (4.1 kg CO₂e/kg), you avoided:
-                </p>
-                <p className="text-2xl font-bold text-blue-700 mt-2">
-                  -{formatNumber(results.savings.scGrand)} kg CO₂e
-                </p>
-              </div>
-            </div>
-          </Card>
-        )}
-
         {/* Product Calculator - Print Hidden, Interactive Tool */}
         <div className="print:hidden">
             <Card className="border-l-4 border-l-blue-500 bg-blue-50/30">

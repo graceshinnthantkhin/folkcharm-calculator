@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StepProps } from '../types';
 import { Input, Button, Card } from './ui/Components';
@@ -171,9 +172,6 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
           onChange={(e) => updateMaterial('scGrand', 'weight', e.target.value)}
           error={errors.scWeight}
         />
-        <p className="text-xs text-gray-500 italic">
-          Uses fixed emission factor: 0.35 kg CO₂e/kg
-        </p>
       </Card>
 
       {/* C. Leftover */}

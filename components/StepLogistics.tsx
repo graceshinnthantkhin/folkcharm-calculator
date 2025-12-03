@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StepProps, VehicleType, TransportLeg } from '../types';
 import { Input, Select, Button, Card } from './ui/Components';
@@ -18,7 +19,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
         ...data.logistics,
         [section]: {
           ...data.logistics[section],
-          [field]: field === 'distance' ? (parseFloat(value) || 0) : value
+          [field]: field === 'distance' ? (value === '' ? NaN : parseFloat(value)) : value
         }
       }
     });
@@ -44,7 +45,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
     checkLeg('spinnerToWeaver', data.materials.farmerCotton.weight);
     checkLeg('weaverToFolkcharm', data.materials.farmerCotton.weight);
     checkLeg('scGrandToFolkcharm', data.materials.scGrand.weight);
-    checkLeg('leftoverToFolkcharm', data.materials.leftover.weight);
+    // Removed leftoverToFolkcharm validation check as the route card is removed.
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -73,7 +74,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
             type="number"
             min="0"
             suffix="km"
-            value={data.logistics[key].distance || ''}
+            value={isNaN(data.logistics[key].distance) ? '' : data.logistics[key].distance}
             onChange={(e) => updateLeg(key, 'distance', e.target.value)}
           />
           <Select
@@ -90,7 +91,17 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
 
   const hasFarmer = data.materials.farmerCotton.weight > 0;
   const hasSC = data.materials.scGrand.weight > 0;
-  const hasLeftover = data.materials.leftover.weight > 0;
+  
+  // Even if hasLeftover is true, we don't show the card.
+  // We check if at least one visible route is needed to show the "No materials" message correctly?
+  // If only leftover is selected, user still needs to click Next.
+  // The original "No materials selected" message was a guard.
+  // If user ONLY selected Leftover, then `hasFarmer` and `hasSC` are false.
+  // The UI would be empty. 
+  // I should probably show a message saying "No logistics required for Leftover Only" or just allow them to proceed.
+  
+  const showEmptyMessage = !hasFarmer && !hasSC && data.materials.leftover.weight <= 0;
+  const showOnlyLeftoverMessage = !hasFarmer && !hasSC && data.materials.leftover.weight > 0;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -113,13 +124,15 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
         </Card>
       )}
 
-      {hasLeftover && (
-        <Card title="C. Leftover Route" className="border-t-4 border-t-amber-500">
-          {renderLegInput('leftoverToFolkcharm', 'Source → Folkcharm Studio', true)}
-        </Card>
+      
+      {showOnlyLeftoverMessage && (
+         <div className="text-center p-8 bg-amber-50 rounded-xl border border-amber-100">
+            <p className="text-amber-800 font-medium">Leftover Cotton (Deadstock) Selected</p>
+            <p className="text-sm text-amber-600 mt-1">No transport logistics required for this material.</p>
+         </div>
       )}
 
-      {!hasFarmer && !hasSC && !hasLeftover && (
+      {showEmptyMessage && (
         <div className="text-center p-10 bg-gray-50 rounded-xl border border-dashed border-gray-300">
           <p className="text-gray-500">No materials selected. Please go back.</p>
         </div>
