@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from 'react';
 import { StepProps, CalculationScope } from '../types';
 import { Button, Card, Select } from './ui/Components';
@@ -223,7 +224,7 @@ const StepHome: React.FC<StepProps> = ({ data, updateData, onNext }) => {
                       type="date"
                       value={data.meta.startDate}
                       onChange={(e) => handleDateChange('startDate', e.target.value)}
-                      className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white cursor-pointer"
+                      className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white cursor-pointer [&::-webkit-calendar-picker-indicator]:hidden"
                     />
                     <CalendarIcon 
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-emerald-600 transition-colors pointer-events-none" 
@@ -244,7 +245,7 @@ const StepHome: React.FC<StepProps> = ({ data, updateData, onNext }) => {
                       type="date"
                       value={data.meta.endDate}
                       onChange={(e) => handleDateChange('endDate', e.target.value)}
-                      className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white cursor-pointer"
+                      className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white cursor-pointer [&::-webkit-calendar-picker-indicator]:hidden"
                     />
                     <CalendarIcon 
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-emerald-600 transition-colors pointer-events-none" 
