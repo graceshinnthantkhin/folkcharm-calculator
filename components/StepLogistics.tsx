@@ -27,16 +27,15 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
 
   const validate = () => {
     // Basic validation: Check if distances are >= 0.
-    // For active routes (where material weight > 0), check if vehicle type is selected if distance > 0.
+    // For active routes (where material weight > 0), check if vehicle type is selected ONLY if distance > 0.
     const newErrors: Record<string, string> = {};
-    // Not stricly enforced by PDF "Distance >= 0", "Vehicle type must be selected".
-    // I will enforce vehicle type ONLY if distance > 0.
 
     const checkLeg = (legKey: keyof typeof data.logistics, weight: number) => {
       if (weight > 0) {
         const leg = data.logistics[legKey];
-        if (leg.distance >= 0 && !leg.vehicleType) {
-          newErrors[`${String(legKey)}Type`] = "Required";
+        // Only require vehicle type if distance is strictly greater than 0
+        if (leg.distance > 0 && !leg.vehicleType) {
+          newErrors[`${String(legKey)}Type`] = "Required when distance > 0";
         }
       }
     };
@@ -92,14 +91,6 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
   const hasFarmer = data.materials.farmerCotton.weight > 0;
   const hasSC = data.materials.scGrand.weight > 0;
   
-  // Even if hasLeftover is true, we don't show the card.
-  // We check if at least one visible route is needed to show the "No materials" message correctly?
-  // If only leftover is selected, user still needs to click Next.
-  // The original "No materials selected" message was a guard.
-  // If user ONLY selected Leftover, then `hasFarmer` and `hasSC` are false.
-  // The UI would be empty. 
-  // I should probably show a message saying "No logistics required for Leftover Only" or just allow them to proceed.
-  
   const showEmptyMessage = !hasFarmer && !hasSC && data.materials.leftover.weight <= 0;
   const showOnlyLeftoverMessage = !hasFarmer && !hasSC && data.materials.leftover.weight > 0;
 
@@ -124,6 +115,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
         </Card>
       )}
 
+      {/* Removed C. Leftover Route Card */}
       
       {showOnlyLeftoverMessage && (
          <div className="text-center p-8 bg-amber-50 rounded-xl border border-amber-100">
