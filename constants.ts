@@ -19,7 +19,7 @@ export const EF_LEFTOVER = 0.0;
 // If the goal is negative emissions (sequestration), this would be negative. 
 // Assuming standard positive cultivation emissions for now unless specified.
 // Updated to HA unit. 1 ha = 6.25 rai. Previous placeholder was 15.0 per rai.
-export const PLACEHOLDER_SOC_EMISSIONS_PER_HA = 93.75; // Placeholder value (15 * 6.25)
+export const PLACEHOLDER_SOC_EMISSIONS_PER_HA = 0; // Placeholder value (15 * 6.25)
 
 // Energy (kg CO2 / kWh)
 export const EF_THAI_GRID = 0.399;
