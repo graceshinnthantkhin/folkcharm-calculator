@@ -22,7 +22,7 @@ export const EF_LEFTOVER = 0.0;
 export const PLACEHOLDER_SOC_EMISSIONS_PER_HA = 0; // Placeholder value (15 * 6.25)
 
 // Energy (kg CO2 / kWh)
-export const EF_THAI_GRID = 0.399;
+export const EF_THAI_GRID = 0.4758;
 
 // Accessories
 // Formula: Item Quantity * 0.05 kg/item * 2.1 kg CO2e/kg
