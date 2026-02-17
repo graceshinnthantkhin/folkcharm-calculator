@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import { StepProps, CalculationScope } from '../types';
 import { Button, Card, Select } from './ui/Components';
@@ -148,7 +147,7 @@ const StepHome: React.FC<StepProps> = ({ data, updateData, onNext }) => {
             </div>
             <div className="bg-emerald-50/50 p-3 rounded-lg border border-emerald-100">
                <span className="font-bold block text-emerald-800 mb-0.5">Inputs</span>
-               Leftover cotton & SC Grands
+               Leftover cotton & Recycle Yarn
             </div>
         </div>
       </div>

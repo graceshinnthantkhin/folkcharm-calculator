@@ -154,13 +154,13 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
         </div>
       </Card>
 
-      {/* B. SC Grand Yarn */}
+      {/* B. Recycle Yarn */}
       <Card className="border-l-4 border-l-blue-500">
          <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
             <Leaf size={24} />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">B. Recycle Yarn or Cotton</h3>
+          <h3 className="text-lg font-semibold text-gray-900">B. Recycle Yarn</h3>
         </div>
         <Input
           label="Weight"
