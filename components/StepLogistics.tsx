@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StepProps, VehicleType, TransportLeg } from '../types';
 import { Input, Select, Button, Card } from './ui/Components';
@@ -44,6 +43,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
     checkLeg('spinnerToWeaver', data.materials.farmerCotton.weight);
     checkLeg('weaverToFolkcharm', data.materials.farmerCotton.weight);
     checkLeg('scGrandToFolkcharm', data.materials.scGrand.weight);
+    // Removed leftoverToFolkcharm validation check as the route card is removed.
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -109,11 +109,12 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
       )}
 
       {hasSC && (
-        <Card title="B. Recycle Transportation" className="border-t-4 border-t-blue-500">
+        <Card title="Recycle Transportation" className="border-t-4 border-t-blue-500">
           {renderLegInput('scGrandToFolkcharm', 'Factory → Folkcharm Studio', true)}
         </Card>
       )}
 
+      {/* Removed C. Leftover Route Card */}
       
       {showOnlyLeftoverMessage && (
          <div className="text-center p-8 bg-amber-50 rounded-xl border border-amber-100">

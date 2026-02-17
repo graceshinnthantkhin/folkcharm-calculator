@@ -5,15 +5,15 @@ import WizardLayout from './components/WizardLayout';
 import StepHome from './components/StepHome';
 import StepMaterials from './components/StepMaterials';
 import StepLogistics from './components/StepLogistics';
-import StepProduction from './components/StepProduction';
+import StepElectricity from './components/StepElectricity';
+import StepWater from './components/StepWater';
 import StepResults from './components/StepResults';
 
-// Initial Empty State
 const initialState: CalculatorState = {
   meta: {
     scope: 'batch',
-    startDate: new Date().toISOString().split('T')[0], // Default to today
-    endDate: new Date().toISOString().split('T')[0],   // Default to today
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
   },
   materials: {
     farmerCotton: { weight: 0, farmArea: 0 },
@@ -27,38 +27,36 @@ const initialState: CalculatorState = {
     scGrandToFolkcharm: { distance: 0, vehicleType: '' as VehicleType },
     leftoverToFolkcharm: { distance: 0, vehicleType: '' as VehicleType },
   },
+  electricity: {
+    entries: [],
+  },
+  water: {
+    entries: [],
+  },
   production: {
-    sewingHours: 0,
     itemQuantity: 0,
-    logbookFile: undefined,
+    // Initialize sewingHours to fix type mismatch
+    sewingHours: 0,
+  },
+  delivery: {
+    finalDistance: 0,
+    vehicleType: '' as VehicleType,
   },
 };
 
-// Steps order
-const STEP_ORDER: StepId[] = ['home', 'materials', 'logistics', 'production', 'results'];
+const STEP_ORDER: StepId[] = ['home', 'materials', 'logistics', 'electricity', 'water', 'results'];
 
 function App() {
   const [currentStep, setCurrentStep] = useState<StepId>('home');
   const [data, setData] = useState<CalculatorState>(initialState);
 
-  // Load state from local storage on mount (optional persistence mentioned in PDF)
   useEffect(() => {
-    const saved = localStorage.getItem('folkcharm_calc_state');
+    const saved = localStorage.getItem('folkcharm_calc_state_v2');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Ensure meta exists and has new fields for backward compatibility
-        if (!parsed.meta) {
-            parsed.meta = initialState.meta;
-        } else if (!parsed.meta.startDate) {
-            // Migration for old state that only had 'date'
-            parsed.meta.startDate = parsed.meta.date || initialState.meta.startDate;
-            parsed.meta.endDate = parsed.meta.date || initialState.meta.endDate;
-        }
-        // Remove delivery from state if it exists from previous versions
-        if ('delivery' in parsed) {
-          delete parsed.delivery;
-        }
+        if (!parsed.electricity) parsed.electricity = { entries: [] };
+        if (!parsed.water) parsed.water = { entries: [] };
         setData(parsed);
       } catch (e) {
         console.error("Failed to load saved state", e);
@@ -66,9 +64,8 @@ function App() {
     }
   }, []);
 
-  // Save state on change
   useEffect(() => {
-    localStorage.setItem('folkcharm_calc_state', JSON.stringify(data));
+    localStorage.setItem('folkcharm_calc_state_v2', JSON.stringify(data));
   }, [data]);
 
   const updateData = (updates: Partial<CalculatorState>) => {
@@ -111,7 +108,8 @@ function App() {
       case 'home': return <StepHome {...props} />;
       case 'materials': return <StepMaterials {...props} />;
       case 'logistics': return <StepLogistics {...props} />;
-      case 'production': return <StepProduction {...props} />;
+      case 'electricity': return <StepElectricity {...props} />;
+      case 'water': return <StepWater {...props} />;
       case 'results': return <StepResults {...props} />;
       default: return <StepHome {...props} />;
     }

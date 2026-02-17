@@ -3,11 +3,10 @@ import { CalculatorState, VehicleType } from '../types';
 import {
   EF_TRANSPORT,
   EF_SC_GRAND_YARN,
-  EF_LEFTOVER,
   EF_THAI_GRID,
+  EF_WATER_TAP,
+  EF_WATER_SOFT,
   WEIGHT_ACCESSORY_PER_ITEM_KG,
-  EF_ACCESSORY,
-  POWER_SEWING_MACHINE_KW,
   PLACEHOLDER_SOC_EMISSIONS_PER_HA,
   EF_VIRGIN_COTTON
 } from '../constants';
@@ -16,7 +15,8 @@ export interface CalculationResults {
   emissions: {
     materials: number;
     logistics: number;
-    production: number;
+    electricity: number;
+    water: number;
     total: number;
   };
   productionStats: {
@@ -28,7 +28,6 @@ export interface CalculationResults {
   };
 }
 
-// Helper to calculate transport emission: Weight (tons) * Distance (km) * Factor
 const calcTransport = (weightKg: number, distanceKm: number, type: VehicleType | ''): number => {
   if (isNaN(distanceKm) || distanceKm === 0 || !type) return 0;
   const weightTons = weightKg / 1000;
@@ -37,75 +36,59 @@ const calcTransport = (weightKg: number, distanceKm: number, type: VehicleType |
 };
 
 export const calculateResults = (data: CalculatorState): CalculationResults => {
-  const { materials, logistics, production } = data;
+  const { materials, logistics, electricity, water, production } = data;
 
   // 1. Materials Emissions
-  // Farmer Cotton: Based on Area * SOC Factor
   const farmerCottonEmissions = materials.farmerCotton.farmArea * PLACEHOLDER_SOC_EMISSIONS_PER_HA; 
-  
-  // SC Grand: Weight * EF
   const scGrandEmissions = materials.scGrand.weight * EF_SC_GRAND_YARN;
+  const totalMaterialEmissions = farmerCottonEmissions + scGrandEmissions;
 
-  // Leftover: 0
-  const leftoverEmissions = materials.leftover.weight * EF_LEFTOVER;
-
-  const totalMaterialEmissions = farmerCottonEmissions + scGrandEmissions + leftoverEmissions;
-
-  // SC Grand Savings (Avoided Emissions vs Virgin Cotton)
-  // Savings = Weight * (Virgin EF - Recycled EF)
   const scGrandSavings = materials.scGrand.weight > 0 
     ? materials.scGrand.weight * (EF_VIRGIN_COTTON - EF_SC_GRAND_YARN)
     : 0;
 
   // 2. Logistics Emissions
-  // Note: "All weights contribute to logistics load."
-  // Each route is specific to a material source.
   let totalLogisticsEmissions = 0;
-
-  // Route A: Farmer Cotton
   if (materials.farmerCotton.weight > 0) {
     totalLogisticsEmissions += calcTransport(materials.farmerCotton.weight, logistics.farmToSpinner.distance, logistics.farmToSpinner.vehicleType);
     totalLogisticsEmissions += calcTransport(materials.farmerCotton.weight, logistics.spinnerToWeaver.distance, logistics.spinnerToWeaver.vehicleType);
     totalLogisticsEmissions += calcTransport(materials.farmerCotton.weight, logistics.weaverToFolkcharm.distance, logistics.weaverToFolkcharm.vehicleType);
   }
-
-  // Route B: SC Grand
   if (materials.scGrand.weight > 0) {
     totalLogisticsEmissions += calcTransport(materials.scGrand.weight, logistics.scGrandToFolkcharm.distance, logistics.scGrandToFolkcharm.vehicleType);
   }
 
-  // Route C: Leftover
-  if (materials.leftover.weight > 0) {
-    totalLogisticsEmissions += calcTransport(materials.leftover.weight, logistics.leftoverToFolkcharm.distance, logistics.leftoverToFolkcharm.vehicleType);
-  }
+  // 3. Electricity Emissions
+  const totalElectricityEmissions = electricity.entries.reduce((acc, entry) => {
+    return acc + (entry.usageKwh * EF_THAI_GRID);
+  }, 0);
 
-  // 3. Production Emissions
-  // Electricity: Hours * kW * GridFactor
-  const electricityEmissions = production.sewingHours * POWER_SEWING_MACHINE_KW * EF_THAI_GRID;
-  
-  // Accessories: Items * WeightPerItem * AccessoryFactor
-  const accessoriesEmissions = production.itemQuantity * WEIGHT_ACCESSORY_PER_ITEM_KG * EF_ACCESSORY;
+  // 4. Water Emissions (Convert m3 to Liters: 1 m3 = 1000L)
+  const totalWaterEmissions = water.entries.reduce((acc, entry) => {
+    const factor = entry.type === 'soft' ? EF_WATER_SOFT : EF_WATER_TAP;
+    const liters = entry.usageM3 * 1000;
+    return acc + (liters * factor);
+  }, 0);
 
-  const totalProductionEmissions = electricityEmissions + accessoriesEmissions;
+  // 5. Total
+  const totalProductionEmissions = totalElectricityEmissions + totalWaterEmissions;
+  const grandTotalEmissions = totalMaterialEmissions + totalLogisticsEmissions + totalProductionEmissions;
 
-  // Total Weight Calculation for Stats
+  // Total Weight
   const totalWeightKg = 
     materials.farmerCotton.weight + 
     materials.scGrand.weight + 
     materials.leftover.weight +
     (production.itemQuantity * WEIGHT_ACCESSORY_PER_ITEM_KG);
 
-  // 4. Total
-  const grandTotalEmissions = totalMaterialEmissions + totalLogisticsEmissions + totalProductionEmissions;
-
-  // 5. Intensity (Per Kg)
   const emissionPerKg = totalWeightKg > 0 ? grandTotalEmissions / totalWeightKg : 0;
 
   return {
     emissions: {
       materials: totalMaterialEmissions,
       logistics: totalLogisticsEmissions,
-      production: totalProductionEmissions,
+      electricity: totalElectricityEmissions,
+      water: totalWaterEmissions,
       total: grandTotalEmissions,
     },
     productionStats: {

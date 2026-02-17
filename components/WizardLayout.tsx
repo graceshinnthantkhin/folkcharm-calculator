@@ -10,7 +10,8 @@ interface WizardLayoutProps {
 const steps: { id: StepId; label: string }[] = [
   { id: 'materials', label: 'Materials' },
   { id: 'logistics', label: 'Logistics' },
-  { id: 'production', label: 'Production' },
+  { id: 'electricity', label: 'Electricity' },
+  { id: 'water', label: 'Water' },
   { id: 'results', label: 'Results' },
 ];
 
@@ -21,7 +22,6 @@ const WizardLayout: React.FC<WizardLayoutProps> = ({ currentStep, children }) =>
 
   return (
     <div className="min-h-screen flex flex-col bg-emerald-50 font-sans text-gray-900">
-      {/* Header - Increased z-index to 50 to prevent content scrolling over it */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -33,13 +33,11 @@ const WizardLayout: React.FC<WizardLayoutProps> = ({ currentStep, children }) =>
             </h1>
           </div>
           {!isHome && (
-            <div className="text-sm text-gray-500 hidden sm:block">
-              Step {currentIndex + 1} of {steps.length}
+            <div className="text-sm text-gray-500 hidden sm:block font-medium">
+              {steps[currentIndex]?.label} — Step {currentIndex + 1} of {steps.length}
             </div>
           )}
         </div>
-        
-        {/* Progress Bar - Only show if not on home */}
         {!isHome && (
           <div className="h-1 w-full bg-gray-100">
             <div 
@@ -49,16 +47,12 @@ const WizardLayout: React.FC<WizardLayoutProps> = ({ currentStep, children }) =>
           </div>
         )}
       </header>
-
-      {/* Main Content */}
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8 md:py-12 relative z-0">
         {children}
       </main>
-
-      {/* Footer */}
       <footer className="bg-white border-t border-gray-200 py-6 mt-auto">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm text-gray-400">
-          <p>© {new Date().getFullYear()} Folkcharm Supply Chain Calculator. Internal Tool.</p>
+          <p>© {new Date().getFullYear()} Folkcharm Supply Chain Calculator. Internal Sustainability Tool.</p>
         </div>
       </footer>
     </div>

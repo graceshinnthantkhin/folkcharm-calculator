@@ -10,29 +10,41 @@ export interface TransportLeg {
 }
 
 export interface LogisticsData {
-  // A. Farmer Cotton Route (3 legs)
   farmToSpinner: TransportLeg;
   spinnerToWeaver: TransportLeg;
   weaverToFolkcharm: TransportLeg;
-
-  // B. SC Grand Route (1 leg)
   scGrandToFolkcharm: TransportLeg;
-
-  // C. Leftover Route (1 leg)
   leftoverToFolkcharm: TransportLeg;
+}
+
+export interface ElectricityEntry {
+  id: string;
+  description: string;
+  usageKwh: number;
+}
+
+export interface WaterEntry {
+  id: string;
+  description: string;
+  usageM3: number;
+  type: 'tap' | 'soft';
+}
+
+// Added DeliveryData to track final transport
+export interface DeliveryData {
+  finalDistance: number;
+  vehicleType: VehicleType | '';
 }
 
 export type CalculationScope = 'batch' | 'monthly';
 
 export interface CalculatorState {
-  // Meta: Scope and Date Range
   meta: {
     scope: CalculationScope;
     startDate: string;
     endDate: string;
   };
 
-  // Step 1: Materials
   materials: {
     farmerCotton: {
       weight: number;
@@ -46,18 +58,27 @@ export interface CalculatorState {
     };
   };
 
-  // Step 2: Logistics
   logistics: LogisticsData;
 
-  // Step 3: Production
-  production: {
-    sewingHours: number;
-    itemQuantity: number;
-    logbookFile?: string;
+  electricity: {
+    entries: ElectricityEntry[];
   };
+
+  water: {
+    entries: WaterEntry[];
+  };
+
+  production: {
+    itemQuantity: number;
+    // Added sewingHours for production tracking
+    sewingHours: number;
+  };
+
+  // Added delivery tracking
+  delivery: DeliveryData;
 }
 
-export type StepId = 'home' | 'materials' | 'logistics' | 'production' | 'results';
+export type StepId = 'home' | 'materials' | 'logistics' | 'electricity' | 'water' | 'results';
 
 export interface StepProps {
   data: CalculatorState;

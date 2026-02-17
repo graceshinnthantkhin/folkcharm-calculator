@@ -34,3 +34,8 @@ export const POWER_SEWING_MACHINE_KW = 0.25;
 
 // Wages
 export const WAGE_RATE_THB_PER_HOUR = 60;
+
+// Water (kg CO2 / Liter)
+export const EF_WATER_TAP = 0.00079;
+export const EF_WATER_SOFT = 0.00103;
+

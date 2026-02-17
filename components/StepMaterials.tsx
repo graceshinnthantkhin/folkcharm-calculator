@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StepProps } from '../types';
 import { Input, Button, Card } from './ui/Components';
@@ -160,7 +159,7 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
           <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
             <Leaf size={24} />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">B. Recycle Yarn</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Recycle Yarn</h3>
         </div>
         <Input
           label="Weight"
