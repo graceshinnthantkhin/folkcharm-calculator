@@ -84,7 +84,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
           <div key={entry.id} className="flex flex-col xl:flex-row items-end gap-3 bg-white p-5 rounded-xl border border-gray-100 shadow-sm relative group">
             <div className="flex-[2] w-full">
               <Input
-                label={index === 0 ? "Description (Leg)" : ""}
+                label={index === 0 ? "Description" : ""}
                 placeholder="e.g., Farm to Spinner"
                 className="mb-0"
                 value={entry.description}
