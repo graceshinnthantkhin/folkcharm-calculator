@@ -29,7 +29,7 @@ export interface CalculationResults {
 }
 
 const calcTransport = (weightKg: number, distanceKm: number, type: VehicleType | ''): number => {
-  if (isNaN(distanceKm) || distanceKm === 0 || !type) return 0;
+  if (isNaN(distanceKm) || distanceKm <= 0 || isNaN(weightKg) || weightKg <= 0 || !type) return 0;
   const weightTons = weightKg / 1000;
   const factor = EF_TRANSPORT[type as VehicleType] || 0;
   return weightTons * distanceKm * factor;
@@ -47,16 +47,10 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
     ? materials.scGrand.weight * (EF_VIRGIN_COTTON - EF_SC_GRAND_YARN)
     : 0;
 
-  // 2. Logistics Emissions
-  let totalLogisticsEmissions = 0;
-  if (materials.farmerCotton.weight > 0) {
-    totalLogisticsEmissions += calcTransport(materials.farmerCotton.weight, logistics.farmToSpinner.distance, logistics.farmToSpinner.vehicleType);
-    totalLogisticsEmissions += calcTransport(materials.farmerCotton.weight, logistics.spinnerToWeaver.distance, logistics.spinnerToWeaver.vehicleType);
-    totalLogisticsEmissions += calcTransport(materials.farmerCotton.weight, logistics.weaverToFolkcharm.distance, logistics.weaverToFolkcharm.vehicleType);
-  }
-  if (materials.scGrand.weight > 0) {
-    totalLogisticsEmissions += calcTransport(materials.scGrand.weight, logistics.scGrandToFolkcharm.distance, logistics.scGrandToFolkcharm.vehicleType);
-  }
+  // 2. Logistics Emissions (Dynamic)
+  const totalLogisticsEmissions = logistics.entries.reduce((acc, entry) => {
+    return acc + calcTransport(entry.weightKg, entry.distance, entry.vehicleType);
+  }, 0);
 
   // 3. Electricity Emissions
   const totalElectricityEmissions = electricity.entries.reduce((acc, entry) => {

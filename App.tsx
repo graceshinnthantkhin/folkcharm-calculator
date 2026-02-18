@@ -21,11 +21,7 @@ const initialState: CalculatorState = {
     leftover: { weight: 0 },
   },
   logistics: {
-    farmToSpinner: { distance: 0, vehicleType: '' as VehicleType },
-    spinnerToWeaver: { distance: 0, vehicleType: '' as VehicleType },
-    weaverToFolkcharm: { distance: 0, vehicleType: '' as VehicleType },
-    scGrandToFolkcharm: { distance: 0, vehicleType: '' as VehicleType },
-    leftoverToFolkcharm: { distance: 0, vehicleType: '' as VehicleType },
+    entries: [],
   },
   electricity: {
     entries: [],
@@ -35,7 +31,6 @@ const initialState: CalculatorState = {
   },
   production: {
     itemQuantity: 0,
-    // Initialize sewingHours to fix type mismatch
     sewingHours: 0,
   },
   delivery: {
@@ -51,10 +46,14 @@ function App() {
   const [data, setData] = useState<CalculatorState>(initialState);
 
   useEffect(() => {
-    const saved = localStorage.getItem('folkcharm_calc_state_v2');
+    const saved = localStorage.getItem('folkcharm_calc_state_v3');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        // Migration logic for old fixed logistics structure
+        if (parsed.logistics && !parsed.logistics.entries) {
+           parsed.logistics = { entries: [] };
+        }
         if (!parsed.electricity) parsed.electricity = { entries: [] };
         if (!parsed.water) parsed.water = { entries: [] };
         setData(parsed);
@@ -65,7 +64,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('folkcharm_calc_state_v2', JSON.stringify(data));
+    localStorage.setItem('folkcharm_calc_state_v3', JSON.stringify(data));
   }, [data]);
 
   const updateData = (updates: Partial<CalculatorState>) => {

@@ -9,12 +9,16 @@ export interface TransportLeg {
   vehicleType: VehicleType;
 }
 
+export interface LogisticsEntry {
+  id: string;
+  description: string;
+  weightKg: number;
+  distance: number;
+  vehicleType: VehicleType | '';
+}
+
 export interface LogisticsData {
-  farmToSpinner: TransportLeg;
-  spinnerToWeaver: TransportLeg;
-  weaverToFolkcharm: TransportLeg;
-  scGrandToFolkcharm: TransportLeg;
-  leftoverToFolkcharm: TransportLeg;
+  entries: LogisticsEntry[];
 }
 
 export interface ElectricityEntry {
@@ -30,7 +34,6 @@ export interface WaterEntry {
   type: 'tap' | 'soft';
 }
 
-// Added DeliveryData to track final transport
 export interface DeliveryData {
   finalDistance: number;
   vehicleType: VehicleType | '';
@@ -70,11 +73,9 @@ export interface CalculatorState {
 
   production: {
     itemQuantity: number;
-    // Added sewingHours for production tracking
     sewingHours: number;
   };
 
-  // Added delivery tracking
   delivery: DeliveryData;
 }
 
