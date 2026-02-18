@@ -76,7 +76,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
     <div className="max-w-5xl mx-auto min-h-[60vh] flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="text-center mb-10">
         <h2 className="text-4xl font-bold text-gray-900 mb-2">Transportation Logistics</h2>
-        <p className="text-gray-500">Add transport legs for your materials. Emissions depend on weight, distance, and vehicle.</p>
+        <p className="text-gray-500">Add transport for your materials. Emissions depend on distance and vehicle.</p>
       </div>
 
       <div className="w-full space-y-4 mb-8">
