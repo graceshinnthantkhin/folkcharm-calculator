@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { StepProps, ElectricityEntry } from '../types';
 import { Input, Button } from './ui/Components';
@@ -13,21 +12,19 @@ const StepElectricity: React.FC<StepProps> = ({ data, updateData, onNext, onBack
       description: '',
       usageKwh: 0,
     };
-    updateData({
-      electricity: { entries: [...entries, newEntry] } });
+    updateData({ electricity: { entries: [...entries, newEntry] } });
   };
 
   const handleRemove = (id: string) => {
-    updateData({
-      electricity: { entries: entries.filter((e) => e.id !== id) } });
+    updateData({ electricity: { entries: entries.filter((e) => e.id !== id) } });
   };
 
   const handleChange = (id: string, field: keyof ElectricityEntry, value: string) => {
     updateData({
       electricity: {
         entries: entries.map((e) =>
-          e.id === id 
-            ? { ...e, [field]: field === 'usageKwh' ? (parseFloat(value) || 0) : value } 
+          e.id === id
+            ? { ...e, [field]: field === 'usageKwh' ? parseFloat(value) || 0 : value }
             : e
         ),
       },
@@ -46,7 +43,7 @@ const StepElectricity: React.FC<StepProps> = ({ data, updateData, onNext, onBack
       <div className="w-full flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-3 mb-8">
         <AlertTriangle size={16} className="mt-0.5 shrink-0" />
         <span>
-          <strong>Bangkok studio only.</strong> Only enter electricity used in the studio — things like lights, fans, computers, and sewing machines. Do not include the hand looms.
+          <strong>Bangkok studio only.</strong> Only enter electricity used in the studio — things like lights, fans, computers, and sewing machines. Do not include the hand looms, as they don't use any electricity.
         </span>
       </div>
 

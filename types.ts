@@ -1,3 +1,10 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// FOLKCHARM CARBON CALCULATOR — Type Definitions
+// Methodology: ISO 14040/14044 + GHG Protocol Product Standard v5
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── LOGISTICS ─────────────────────────────────────────────────────────────────
+// Single EF_TRANSPORT factor used for all legs — no vehicle type distinction
 export interface LogisticsEntry {
   id: string;
   description: string;
@@ -9,20 +16,27 @@ export interface LogisticsData {
   entries: LogisticsEntry[];
 }
 
+// ── ELECTRICITY ───────────────────────────────────────────────────────────────
+// Bangkok studio only — hand looms excluded (zero electricity)
 export interface ElectricityEntry {
   id: string;
   description: string;
   usageKwh: number;
 }
 
+// ── WATER ─────────────────────────────────────────────────────────────────────
+// Tap water only — used for natural plant dyeing
+// Soft water proxy removed per v5 methodology
 export interface WaterEntry {
   id: string;
   description: string;
   usageM3: number;
 }
 
+// ── SCOPE ─────────────────────────────────────────────────────────────────────
 export type CalculationScope = 'batch' | 'monthly';
 
+// ── CALCULATOR STATE ──────────────────────────────────────────────────────────
 export interface CalculatorState {
   meta: {
     scope: CalculationScope;
@@ -30,32 +44,45 @@ export interface CalculatorState {
     endDate: string;
   };
 
+  // EQ1: Functional unit — 1 kg finished fabric
+  // EQ2/EQ3a: Chain A Loei weft (zero emission — hand-processed)
+  // EQ3b/EQ4: Chain B Green Net warp (machine-processed — has emissions)
   materials: {
-    fabricKg: number;
-    loeiCottonKg: number;
-    greenNetYarnKg: number;
-    leftoverKg: number;
+    fabricKg: number;        // W_fabric_kg — finished fabric weight (functional unit denominator)
+    loeiCottonKg: number;    // Chain A — Loei hand-spun weft cotton weight (EQ2, EQ3a)
+    greenNetYarnKg: number;  // Chain B — Green Net machine-spun warp yarn weight (EQ3b, EQ4)
+    leftoverKg: number;      // Deadstock/leftover — zero emission (ISO 14044 s.4.3.4)
   };
 
-  logistics: LogisticsData;
+  logistics: LogisticsData;  // EQ8 — 6 transport legs
 
-  electricity: {
+  electricity: {             // EQ9 — Bangkok studio only
     entries: ElectricityEntry[];
   };
 
-  water: {
+  water: {                   // EQ7 — natural dye tap water
     entries: WaterEntry[];
   };
 
+  // EQ6: Bangkok tailoring, EQ10: Scrap reuse transport
   tailoring: {
-    fabricKg: number;
-    scrapsKg: number;
-    scrapsDistKm: number;
-  }
+    fabricKg: number;        // Weight sent to Bangkok tailors (EQ6)
+    scrapsKg: number;        // Weight of scraps sent to Bangkapi students (EQ10)
+    scrapsDistKm: number;    // Distance tailors → Bangkapi Vocational Center (EQ10)
+  };
 }
 
-export type StepId = 'home' | 'materials' | 'logistics' | 'electricity' | 'water' | 'tailoring' | 'results';
+// ── STEP NAVIGATION ───────────────────────────────────────────────────────────
+export type StepId =
+  | 'home'
+  | 'materials'
+  | 'logistics'
+  | 'electricity'
+  | 'water'
+  | 'tailoring'
+  | 'results';
 
+// ── STEP COMPONENT PROPS ──────────────────────────────────────────────────────
 export interface StepProps {
   data: CalculatorState;
   updateData: (updates: Partial<CalculatorState>) => void;

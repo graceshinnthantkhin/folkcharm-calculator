@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { StepProps } from '../types';
 import { Input, Button, Card } from './ui/Components';
 import { ArrowRight, Leaf, Sprout, Recycle, Info } from 'lucide-react';
@@ -11,18 +11,18 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
     const { fabricKg, loeiCottonKg, greenNetYarnKg, leftoverKg } = data.materials;
 
     if (!fabricKg || fabricKg <= 0) {
-      newErrors.fabricKg = 'Finished fabric weight is required! This is the functional unit for all calculations.';
+      newErrors.fabricKg = 'Finished fabric weight is required — this is the functional unit for all calculations.';
     }
     const totalInput = loeiCottonKg + greenNetYarnKg + leftoverKg;
     if (totalInput <= 0) {
       newErrors.general = 'At least one material source must have a weight greater than 0.';
     }
-    if (loeiCottonKg < 0) newErrors.loeiCotton = 'Cannot be negative!';
-    if (greenNetYarnKg < 0) newErrors.greenNet = 'Cannot be negative!';
-    if (leftoverKg < 0) newErrors.leftover = 'Cannot be negative!';
+    if (loeiCottonKg < 0) newErrors.loeiCotton = 'Cannot be negative';
+    if (greenNetYarnKg < 0) newErrors.greenNet = 'Cannot be negative';
+    if (leftoverKg < 0) newErrors.leftover = 'Cannot be negative';
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length == 0;
+    return Object.keys(newErrors).length === 0;
   };
 
   const updateField = (field: keyof typeof data.materials, value: string) => {
@@ -37,12 +37,12 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">Material Input</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Materials Input</h2>
         <p className="text-gray-500 mt-2">Enter the weight of each cotton source and your finished fabric output.</p>
       </div>
 
       {errors.general && (
-        <div className="bg-red-50 border-red-200 text-red-600 p-4 rounded-lg text-sm text-center">
+        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg text-sm text-center">
           {errors.general}
         </div>
       )}
@@ -90,7 +90,8 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
         <div className="flex items-start gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 mb-4 text-xs text-emerald-700">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>
-            Every step is done by hand — no electricity, no machines
+            Every step in this chain is done entirely by hand — no electricity, no machines.
+            The only emissions come from water used in dyeing and transporting the cotton between locations.
           </span>
         </div>
         <Input
@@ -125,7 +126,8 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
         <div className="flex items-start gap-2 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 mb-4 text-xs text-blue-700">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>
-            This cotton is machine-ginned and machine-spun, so it uses electricity and produces emissions
+            This cotton is machine-ginned and machine-spun, so it uses electricity and produces emissions.
+            The Thai electricity grid rate is applied automatically.
           </span>
         </div>
         <Input

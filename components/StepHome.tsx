@@ -91,7 +91,7 @@ const StepHome: React.FC<StepProps> = ({ data, updateData, onNext }) => {
     return parts[part] || '';
   };
 
-  // Views
+  // --- Views ---
 
   const renderLanding = () => (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in slide-in-from-bottom-4 duration-700">

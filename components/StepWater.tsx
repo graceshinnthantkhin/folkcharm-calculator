@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { StepProps, WaterEntry } from '../types';
 import { Input, Button } from './ui/Components';
@@ -13,21 +12,19 @@ const StepWater: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) =>
       description: '',
       usageM3: 0,
     };
-    updateData({
-      water: { entries: [...entries, newEntry] } });
+    updateData({ water: { entries: [...entries, newEntry] } });
   };
 
   const handleRemove = (id: string) => {
-    updateData({
-      water: { entries: entries.filter((e) => e.id !== id) } });
+    updateData({ water: { entries: entries.filter((e) => e.id !== id) } });
   };
 
   const handleChange = (id: string, field: keyof WaterEntry, value: string) => {
     updateData({
       water: {
         entries: entries.map((e) =>
-          e.id === id 
-            ? { ...e, [field]: field === 'usageM3' ? (parseFloat(value) || 0) : value } 
+          e.id === id
+            ? { ...e, [field]: field === 'usageM3' ? parseFloat(value) || 0 : value }
             : e
         ),
       },
@@ -46,7 +43,7 @@ const StepWater: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) =>
       <div className="w-full flex items-start gap-2 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-lg px-4 py-3 mb-8">
         <Droplets size={16} className="mt-0.5 shrink-0" />
         <span>
-          <strong>For natural dyeing only.</strong> Enter the tap water used when dyeing yarn with plant-based dyes.
+          <strong>For natural dyeing only.</strong> Enter the tap water used when dyeing yarn with plant-based dyes such as indigo, wild ebony, and anatto. Enter the amount in m³ and we'll handle the conversion.
         </span>
       </div>
 

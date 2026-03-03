@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { StepProps, LogisticsEntry } from '../types';
-import { Input, Select, Button } from './ui/Components';
+import { Input, Button } from './ui/Components';
 import { ArrowLeft, ArrowRight, Plus, Trash2, AlertTriangle } from 'lucide-react';
 
 // Default 6 transport legs per v5 methodology
-// Leg 5 (600km to Bangkok) is the only CONFIRMED distance - folkcharm.com/travels
-// Legs 1 and 4 are data gaps - user must fill distance
+// Leg 5 (600km to Bangkok) is the only CONFIRMED distance — folkcharm.com/travels
+// Legs 1 and 4 are data gaps — user must fill distance
 const buildDefaultLegs = (
   loeiKg: number,
   greenNetKg: number,
@@ -14,7 +13,7 @@ const buildDefaultLegs = (
 ): LogisticsEntry[] => [
   {
     id: crypto.randomUUID(),
-    description: 'Phulang farms → gin site',
+    description: 'Phuluang farms → gin site',
     weightKg: loeiKg,
     distanceKm: 0,
   },
@@ -34,7 +33,7 @@ const buildDefaultLegs = (
     id: crypto.randomUUID(),
     description: 'Green Net mill → weavers',
     weightKg: greenNetKg,
-    distanceKm: 0.
+    distanceKm: 0,
   },
   {
     id: crypto.randomUUID(),
@@ -49,6 +48,7 @@ const buildDefaultLegs = (
     distanceKm: 15,
   },
 ];
+
 const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) => {
   const entries = data.logistics.entries;
 
@@ -66,14 +66,13 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
     updateData({ logistics: { entries: entries.filter((e) => e.id !== id) } });
   };
 
-  const handleChange = (id: string, field: keyof LogisticsEntry, value: any) => {
+  const handleChange = (id: string, field: keyof LogisticsEntry, value: string) => {
     updateData({
       logistics: {
         entries: entries.map((e) =>
-          e.id === id ? { 
-            ...e, 
-            [field]: (field === 'weightKg' || field === 'distanceKm') ? (parseFloat(value) || 0) : value 
-          } : e
+          e.id === id
+            ? { ...e, [field]: field === 'weightKg' || field === 'distanceKm' ? parseFloat(value) || 0 : value }
+            : e
         ),
       },
     });
@@ -107,7 +106,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
       <div className="w-full flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-3 mb-6">
         <AlertTriangle size={16} className="mt-0.5 shrink-0" />
         <span>
-          <strong>Legs 1 and 4 need your input</strong> Enter the distance
+          <strong>Legs 1 and 4 need your input</strong> — we don't have the exact distances yet. Enter your best estimate or check with Folkcharm.
         </span>
       </div>
 
@@ -205,7 +204,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
         </Button>
       </div>
     </div>
-  );  
+  );
 };
 
 export default StepLogistics;
