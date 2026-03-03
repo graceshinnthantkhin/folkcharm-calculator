@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { CalculatorState, StepId, VehicleType } from './types';
+import { CalculatorState, StepId } from './types';
 import WizardLayout from './components/WizardLayout';
 import StepHome from './components/StepHome';
 import StepMaterials from './components/StepMaterials';
 import StepLogistics from './components/StepLogistics';
 import StepElectricity from './components/StepElectricity';
 import StepWater from './components/StepWater';
+import StepTailoring from './components/StepTailoring';
 import StepResults from './components/StepResults';
 
 const initialState: CalculatorState = {
@@ -16,9 +17,10 @@ const initialState: CalculatorState = {
     endDate: new Date().toISOString().split('T')[0],
   },
   materials: {
-    farmerCotton: { weight: 0, farmArea: 0 },
-    scGrand: { weight: 0 },
-    leftover: { weight: 0 },
+    fabricKg: 0,
+    loeiCottonKg: 0,
+    greenNetYarnKg: 0,
+    leftoverKg: 0,
   },
   logistics: {
     entries: [],
@@ -29,42 +31,77 @@ const initialState: CalculatorState = {
   water: {
     entries: [],
   },
-  production: {
-    itemQuantity: 0,
-    sewingHours: 0,
-  },
-  delivery: {
-    finalDistance: 0,
-    vehicleType: '' as VehicleType,
+  tailoring: {
+    fabricKg: 0,
+    scrapsKg: 0,
+    scrapsDistKm: 15,
   },
 };
 
-const STEP_ORDER: StepId[] = ['home', 'materials', 'logistics', 'electricity', 'water', 'results'];
+const STEP_ORDER: StepId[] = [
+  'home',
+  'materials',
+  'logistics',
+  'electricity',
+  'water',
+  'tailoring',
+  'results',
+];
 
 function App() {
   const [currentStep, setCurrentStep] = useState<StepId>('home');
   const [data, setData] = useState<CalculatorState>(initialState);
 
   useEffect(() => {
-    const saved = localStorage.getItem('folkcharm_calc_state_v3');
+    const saved = localStorage.getItem('folkcharm_calc_state_v5');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Migration logic for old fixed logistics structure
-        if (parsed.logistics && !parsed.logistics.entries) {
-           parsed.logistics = { entries: [] };
+
+        // ── Migration: old materials shape (v3) → new flat shape (v5) ──
+        if (parsed.materials && parsed.materials.farmerCotton !== undefined) {
+          parsed.materials = {
+            fabricKg: 0,
+            loeiCottonKg: parsed.materials.farmerCotton?.weight || 0,
+            greenNetYarnKg: parsed.materials.scGrand?.weight || 0,
+            leftoverKg: parsed.materials.leftover?.weight || 0,
+          };
         }
+
+        // ── Migration: ensure tailoring block exists ──
+        if (!parsed.tailoring) {
+          parsed.tailoring = { fabricKg: 0, scrapsKg: 0, scrapsDistKm: 15 };
+        }
+
+        // ── Migration: logistics entries rename distance → distanceKm ──
+        if (parsed.logistics?.entries) {
+          parsed.logistics.entries = parsed.logistics.entries.map((e: any) => ({
+            ...e,
+            distanceKm: e.distanceKm ?? e.distance ?? 0,
+          }));
+        }
+
+        // ── Migration: remove soft water type from water entries ──
+        if (parsed.water?.entries) {
+          parsed.water.entries = parsed.water.entries.map((e: any) => {
+            const { type, ...rest } = e;
+            return rest;
+          });
+        }
+
+        // ── Ensure required blocks exist ──
         if (!parsed.electricity) parsed.electricity = { entries: [] };
         if (!parsed.water) parsed.water = { entries: [] };
+
         setData(parsed);
       } catch (e) {
-        console.error("Failed to load saved state", e);
+        console.error('Failed to load saved state', e);
       }
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('folkcharm_calc_state_v3', JSON.stringify(data));
+    localStorage.setItem('folkcharm_calc_state_v5', JSON.stringify(data));
   }, [data]);
 
   const updateData = (updates: Partial<CalculatorState>) => {
@@ -95,22 +132,23 @@ function App() {
   };
 
   const renderStep = () => {
-    const props = { 
-      data, 
-      updateData, 
-      onNext: handleNext, 
+    const props = {
+      data,
+      updateData,
+      onNext: handleNext,
       onBack: handleBack,
-      onRestart: handleRestart
+      onRestart: handleRestart,
     };
-    
+
     switch (currentStep) {
-      case 'home': return <StepHome {...props} />;
-      case 'materials': return <StepMaterials {...props} />;
-      case 'logistics': return <StepLogistics {...props} />;
+      case 'home':        return <StepHome {...props} />;
+      case 'materials':   return <StepMaterials {...props} />;
+      case 'logistics':   return <StepLogistics {...props} />;
       case 'electricity': return <StepElectricity {...props} />;
-      case 'water': return <StepWater {...props} />;
-      case 'results': return <StepResults {...props} />;
-      default: return <StepHome {...props} />;
+      case 'water':       return <StepWater {...props} />;
+      case 'tailoring':   return <StepTailoring {...props} />;
+      case 'results':     return <StepResults {...props} />;
+      default:            return <StepHome {...props} />;
     }
   };
 

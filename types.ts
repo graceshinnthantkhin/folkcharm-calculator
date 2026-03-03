@@ -1,20 +1,8 @@
-
-export enum VehicleType {
-  LIGHT = 'Light Vehicle',
-  HEAVY = 'Heavy Vehicle',
-}
-
-export interface TransportLeg {
-  distance: number;
-  vehicleType: VehicleType;
-}
-
 export interface LogisticsEntry {
   id: string;
   description: string;
   weightKg: number;
-  distance: number;
-  vehicleType: VehicleType | '';
+  distanceKm: number;
 }
 
 export interface LogisticsData {
@@ -31,12 +19,6 @@ export interface WaterEntry {
   id: string;
   description: string;
   usageM3: number;
-  type: 'tap' | 'soft';
-}
-
-export interface DeliveryData {
-  finalDistance: number;
-  vehicleType: VehicleType | '';
 }
 
 export type CalculationScope = 'batch' | 'monthly';
@@ -49,16 +31,10 @@ export interface CalculatorState {
   };
 
   materials: {
-    farmerCotton: {
-      weight: number;
-      farmArea: number; // in ha
-    };
-    scGrand: {
-      weight: number;
-    };
-    leftover: {
-      weight: number;
-    };
+    fabricKg: number;
+    loeiCottonKg: number;
+    greenNetYarnKg: number;
+    leftoverKg: number;
   };
 
   logistics: LogisticsData;
@@ -71,15 +47,14 @@ export interface CalculatorState {
     entries: WaterEntry[];
   };
 
-  production: {
-    itemQuantity: number;
-    sewingHours: number;
-  };
-
-  delivery: DeliveryData;
+  tailoring: {
+    fabricKg: number;
+    scrapsKg: number;
+    scrapsDistKm: number;
+  }
 }
 
-export type StepId = 'home' | 'materials' | 'logistics' | 'electricity' | 'water' | 'results';
+export type StepId = 'home' | 'materials' | 'logistics' | 'electricity' | 'water' | 'tailoring' | 'results';
 
 export interface StepProps {
   data: CalculatorState;

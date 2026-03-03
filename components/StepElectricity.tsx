@@ -2,7 +2,7 @@
 import React from 'react';
 import { StepProps, ElectricityEntry } from '../types';
 import { Input, Button } from './ui/Components';
-import { ArrowLeft, ArrowRight, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Plus, Trash2, AlertTriangle } from 'lucide-react';
 
 const StepElectricity: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) => {
   const entries = data.electricity.entries;
@@ -14,49 +14,52 @@ const StepElectricity: React.FC<StepProps> = ({ data, updateData, onNext, onBack
       usageKwh: 0,
     };
     updateData({
-      electricity: {
-        ...data.electricity,
-        entries: [...entries, newEntry],
-      },
-    });
+      electricity: { entries: [...entries, newEntry] } });
   };
 
   const handleRemove = (id: string) => {
     updateData({
-      electricity: {
-        ...data.electricity,
-        entries: entries.filter((e) => e.id !== id),
-      },
-    });
+      electricity: { entries: entries.filter((e) => e.id !== id) } });
   };
 
   const handleChange = (id: string, field: keyof ElectricityEntry, value: string) => {
     updateData({
       electricity: {
-        ...data.electricity,
         entries: entries.map((e) =>
-          e.id === id ? { ...e, [field]: field === 'usageKwh' ? (parseFloat(value) || 0) : value } : e
+          e.id === id 
+            ? { ...e, [field]: field === 'usageKwh' ? (parseFloat(value) || 0) : value } 
+            : e
         ),
       },
     });
   };
 
-  // Ensure at least one row
   React.useEffect(() => {
     if (entries.length === 0) handleAdd();
   }, []);
 
   return (
     <div className="max-w-3xl mx-auto min-h-[60vh] flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Electricity Usage</h2>
+      <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Electricity Usage</h2>
+
+      {/* Critical warning */}
+      <div className="w-full flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-3 mb-8">
+        <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+        <span>
+          <strong>Bangkok studio only.</strong> Only enter electricity used in the studio — things like lights, fans, computers, and sewing machines. Do not include the hand looms.
+        </span>
+      </div>
 
       <div className="w-full space-y-4 mb-8">
         {entries.map((entry, index) => (
-          <div key={entry.id} className="flex flex-col md:flex-row items-end gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm relative group">
+          <div
+            key={entry.id}
+            className="flex flex-col md:flex-row items-end gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm"
+          >
             <div className="flex-1 w-full">
               <Input
-                label={index === 0 ? "Meter Description" : ""}
-                placeholder="e.g., Workshop Meter A"
+                label={index === 0 ? 'Meter / Equipment Description' : ''}
+                placeholder="e.g., Studio sewing machines"
                 className="mb-0"
                 value={entry.description}
                 onChange={(e) => handleChange(entry.id, 'description', e.target.value)}
@@ -64,7 +67,7 @@ const StepElectricity: React.FC<StepProps> = ({ data, updateData, onNext, onBack
             </div>
             <div className="w-full md:w-48">
               <Input
-                label={index === 0 ? "Usage (kWh)" : ""}
+                label={index === 0 ? 'Usage (kWh)' : ''}
                 type="number"
                 min="0"
                 placeholder="0"
@@ -78,7 +81,6 @@ const StepElectricity: React.FC<StepProps> = ({ data, updateData, onNext, onBack
               <button
                 onClick={() => handleRemove(entry.id)}
                 className="mb-2 p-2 text-gray-300 hover:text-red-500 transition-colors"
-                title="Remove row"
               >
                 <Trash2 size={20} />
               </button>
@@ -97,7 +99,7 @@ const StepElectricity: React.FC<StepProps> = ({ data, updateData, onNext, onBack
         </div>
       </div>
 
-      <div className="mt-auto w-full flex justify-between items-center pt-12">
+      <div className="mt-auto w-full flex justify-between items-center pt-8">
         <Button variant="secondary" onClick={onBack} className="px-8 h-12">
           <ArrowLeft className="mr-2" size={20} /> Back
         </Button>

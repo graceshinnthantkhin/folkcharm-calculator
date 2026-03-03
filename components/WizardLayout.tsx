@@ -8,17 +8,18 @@ interface WizardLayoutProps {
 }
 
 const steps: { id: StepId; label: string }[] = [
-  { id: 'materials', label: 'Materials' },
-  { id: 'logistics', label: 'Logistics' },
+  { id: 'materials',   label: 'Materials' },
+  { id: 'logistics',   label: 'Logistics' },
   { id: 'electricity', label: 'Electricity' },
-  { id: 'water', label: 'Water' },
-  { id: 'results', label: 'Results' },
+  { id: 'water',       label: 'Water' },
+  { id: 'tailoring',   label: 'Tailoring' },
+  { id: 'results',     label: 'Results' },
 ];
 
 const WizardLayout: React.FC<WizardLayoutProps> = ({ currentStep, children }) => {
   const isHome = currentStep === 'home';
   const currentIndex = steps.findIndex((s) => s.id === currentStep);
-  const progress = ((currentIndex + 1) / steps.length) * 100;
+  const progress = currentIndex >= 0 ? ((currentIndex + 1) / steps.length) * 100 : 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-emerald-50 font-sans text-gray-900">
@@ -32,16 +33,16 @@ const WizardLayout: React.FC<WizardLayoutProps> = ({ currentStep, children }) =>
               Folkcharm <span className="text-gray-400 font-normal">Calculator</span>
             </h1>
           </div>
-          {!isHome && (
+          {!isHome && currentIndex >= 0 && (
             <div className="text-sm text-gray-500 hidden sm:block font-medium">
               {steps[currentIndex]?.label} — Step {currentIndex + 1} of {steps.length}
             </div>
           )}
         </div>
-        {!isHome && (
+        {!isHome && currentIndex >= 0 && (
           <div className="h-1 w-full bg-gray-100">
-            <div 
-              className="h-full bg-emerald-600 transition-all duration-500 ease-out" 
+            <div
+              className="h-full bg-emerald-600 transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
