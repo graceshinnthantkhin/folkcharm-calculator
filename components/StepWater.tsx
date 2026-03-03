@@ -43,7 +43,7 @@ const StepWater: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) =>
       <div className="w-full flex items-start gap-2 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-lg px-4 py-3 mb-8">
         <Droplets size={16} className="mt-0.5 shrink-0" />
         <span>
-          <strong>For natural dyeing only.</strong> Enter the tap water used when dyeing yarn with plant-based dyes such as indigo, wild ebony, and anatto. Enter the amount in m³ and we'll handle the conversion.
+          <strong>For natural dyeing only.</strong> Enter the tap water used when dyeing yarn with plant-based dyes.
         </span>
       </div>
 

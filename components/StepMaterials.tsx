@@ -90,8 +90,7 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
         <div className="flex items-start gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 mb-4 text-xs text-emerald-700">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>
-            Every step in this chain is done entirely by hand — no electricity, no machines.
-            The only emissions come from water used in dyeing and transporting the cotton between locations.
+            Every step is done by hand — no electricity, no machines.
           </span>
         </div>
         <Input
@@ -126,8 +125,7 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
         <div className="flex items-start gap-2 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 mb-4 text-xs text-blue-700">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>
-            This cotton is machine-ginned and machine-spun, so it uses electricity and produces emissions.
-            The Thai electricity grid rate is applied automatically.
+          This cotton is machine-ginned and machine-spun, so it uses electricity and produces emissions.
           </span>
         </div>
         <Input

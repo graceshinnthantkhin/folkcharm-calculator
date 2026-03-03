@@ -47,7 +47,7 @@ const StepTailoring: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
         <div className="flex items-start gap-2 bg-purple-50 border border-purple-100 rounded-lg px-3 py-2 mb-4 text-xs text-purple-700">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>
-            Enter the total weight of fabric sent to the Bangkok tailors for sewing into finished garments. These are home-based tailors using regular sewing machines.
+            Enter the total weight of fabric sent to the Bangkok tailors.
           </span>
         </div>
         <Input
@@ -77,7 +77,7 @@ const StepTailoring: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
         <div className="flex items-start gap-2 bg-teal-50 border border-teal-100 rounded-lg px-3 py-2 mb-4 text-xs text-teal-700">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>
-            Leftover fabric scraps are sent to vocational students who hand-cut and sew them into bags. Since no machines are used, the only carbon counted here is the transport to deliver the scraps.
+            Since no machines are used, the only carbon counted here is the transport to deliver the scraps.
           </span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

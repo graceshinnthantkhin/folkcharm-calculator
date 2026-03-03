@@ -106,7 +106,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
       <div className="w-full flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-3 mb-6">
         <AlertTriangle size={16} className="mt-0.5 shrink-0" />
         <span>
-          <strong>Legs 1 and 4 need your input</strong> — we don't have the exact distances yet. Enter your best estimate or check with Folkcharm.
+          <strong>Legs 1 and 4 need input</strong> — Don't have the exact distances yet.
         </span>
       </div>
 
