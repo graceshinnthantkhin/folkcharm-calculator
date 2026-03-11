@@ -13,6 +13,7 @@ const steps: { id: StepId; label: string }[] = [
   { id: 'electricity', label: 'Electricity' },
   { id: 'water',       label: 'Water' },
   { id: 'tailoring',   label: 'Tailoring' },
+  { id: 'social',      label: 'Social' },
   { id: 'results',     label: 'Results' },
 ];
 

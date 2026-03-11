@@ -13,34 +13,33 @@ import {
   EF_SPIN_WARP,
   SEED_COTTON_RATIO,
   EF_TAILOR,
-  EF_POWERLOOM,
-  ARTISANS_TOTAL,
-  DAYS_PER_KG_WEFT,
+  POWER_LOOM_KWH_PER_KG,
 } from '../constants';
 
 // ── OUTPUT INTERFACES ─────────────────────────────────────────────────────────
 
 export interface CalculationResults {
   emissions: {
-    // Chain A — Loei weft cotton (all confirmed zero, shown for transparency)
     chainA: number;
-    // Chain B — Green Net warp cotton
-    ginWarp: number;      // EQ3b: machine ginning
-    spinWarp: number;     // EQ4:  machine spinning
-    // Shared stages
-    tailoring: number;    // EQ6:  Bangkok tailoring
-    logistics: number;    // EQ8:  all 6 transport legs
-    electricity: number;  // EQ9:  Bangkok studio
-    water: number;        // EQ7:  natural dye tap water
-    scraps: number;       // EQ10: scrap reuse transport only
-    // Totals
+    ginWarp: number;
+    spinWarp: number;
+    tailoring: number;
+    logistics: number;
+    electricity: number;
+    water: number;
+    scraps: number;
     total: number;
     perKgFabric: number;
   };
   social: {
-    artisansSupported: number;   // SI1
-    skillDaysPreserved: number;  // SI2
-    emissionsAvoided: number;    // SI3
+    artisansSupported: number;      // SI1 — from user input
+    artisanIncomePerBatch: number;  // SI1b — payment to artisans (THB)
+    revenueSharePercent: number;    // SI2 — (payment / revenue) × 100
+    fteJobs: number;                // SI3 — totalArtisanHours ÷ 160
+    artisanWorkHours: number;       // SI4 — from user input
+    womenArtisansPercent: number;   // SI5 — from user input
+    skillDaysPreserved: number;     // SI7 — loeiCottonKg × daysPerKgWeft
+    emissionsAvoided: number;       // vs power loom (display only)
   };
 }
 
@@ -71,13 +70,14 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
   // ── EQ3b: Green Net machine ginning ──────────────────────────────────────
   // Seed cotton needed = warp yarn × 1.25 (80% lint-to-seed ratio)
   // EF = 0.131 kg CO2e/kg — Nigam et al. 2016 (proxy: US gin data)
+  // Absolute batch emissions (kg CO2e); per-kg = total / W below
   const seedCottonKg = materials.greenNetYarnKg * SEED_COTTON_RATIO;
-  const CF_GinWarp = W > 0 ? (seedCottonKg * EF_GIN_WARP) / W : 0;
+  const CF_GinWarp = seedCottonKg * EF_GIN_WARP;
 
   // ── EQ4: Green Net warp spinning ─────────────────────────────────────────
   // EF = 1.167 kg CO2e/kg — 2.456 kWh/kg × TGO 0.4750
-  // Thai grid confirmed (greennet.or.th). Previous value 1.357 used wrong Indian grid.
-  const CF_SpinWarp = W > 0 ? (materials.greenNetYarnKg * EF_SPIN_WARP) / W : 0;
+  // Absolute batch emissions (kg CO2e)
+  const CF_SpinWarp = materials.greenNetYarnKg * EF_SPIN_WARP;
 
   // ── EQ6: Bangkok tailoring ────────────────────────────────────────────────
   // EF = 0.84 kg CO2e/kg — Bhalla 2018 Fig.8 (conservative, Indian grid proxy)
@@ -128,21 +128,32 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
 
   const perKgFabric = W > 0 ? total / W : 0;
 
-  // ── SOCIAL IMPACT ─────────────────────────────────────────────────────────
+  // ── SOCIAL IMPACT (all from user input — no hardcoding) ───────────────────
+  const socialInput = data.social ?? {
+    artisanCount: 0,
+    totalArtisanHours: 0,
+    paymentToArtisansBaht: 0,
+    totalBatchRevenueBaht: 0,
+    womenArtisansPercent: 0,
+    daysPerKgWeft: 0,
+  };
 
-  // SI1: Artisans supported
-  // 51 confirmed: 10 Loei farmers + 30 weavers + 5 tailors + 6 Bangkapi students
-  // Per batch — fixed until Folkcharm provides per-batch artisan data
-  const artisansSupported = ARTISANS_TOTAL;
+  // No default: use only user input for days per kg weft (SI7)
+  const daysPerKg = socialInput.daysPerKgWeft > 0 ? socialInput.daysPerKgWeft : 0;
 
-  // SI2: Days of Khen-Mue hand-spinning preserved
-  // 2–3 days per kg (folkcharm.com/philosophy). Midpoint = 2.5
-  const skillDaysPreserved = materials.loeiCottonKg * DAYS_PER_KG_WEFT;
-
-  // SI3: Emissions avoided vs factory power loom
-  // Nigam 2016: 5.75 kWh/kg × TGO 0.4750 = 2.730 kg CO2e/kg
-  // Shown as positive saving in UI — NOT subtracted from total
-  const emissionsAvoided = W * EF_POWERLOOM;
+  const artisansSupported = socialInput.artisanCount;
+  const artisanIncomePerBatch = socialInput.paymentToArtisansBaht;
+  const revenueSharePercent =
+    socialInput.totalBatchRevenueBaht > 0
+      ? (socialInput.paymentToArtisansBaht / socialInput.totalBatchRevenueBaht) * 100
+      : 0;
+  const HOURS_PER_FTE_MONTH = 160;
+  const fteJobs = socialInput.totalArtisanHours / HOURS_PER_FTE_MONTH;
+  const artisanWorkHours = socialInput.totalArtisanHours;
+  const womenArtisansPercent = socialInput.womenArtisansPercent;
+  const skillDaysPreserved = materials.loeiCottonKg * daysPerKg;
+  // Emissions avoided: compare vs factory power loom using Thai grid (TGO) only
+  const emissionsAvoided = W * POWER_LOOM_KWH_PER_KG * EF_THAI_GRID;
 
   return {
     emissions: {
@@ -159,6 +170,11 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
     },
     social: {
       artisansSupported,
+      artisanIncomePerBatch,
+      revenueSharePercent,
+      fteJobs,
+      artisanWorkHours,
+      womenArtisansPercent,
       skillDaysPreserved,
       emissionsAvoided,
     },

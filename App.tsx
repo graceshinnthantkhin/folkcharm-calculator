@@ -8,7 +8,17 @@ import StepLogistics from './components/StepLogistics';
 import StepElectricity from './components/StepElectricity';
 import StepWater from './components/StepWater';
 import StepTailoring from './components/StepTailoring';
+import StepSocial from './components/StepSocial';
 import StepResults from './components/StepResults';
+
+const defaultSocial = {
+  artisanCount: 0,
+  totalArtisanHours: 0,
+  paymentToArtisansBaht: 0,
+  totalBatchRevenueBaht: 0,
+  womenArtisansPercent: 0,
+  daysPerKgWeft: 0,
+};
 
 const initialState: CalculatorState = {
   meta: {
@@ -34,8 +44,9 @@ const initialState: CalculatorState = {
   tailoring: {
     fabricKg: 0,
     scrapsKg: 0,
-    scrapsDistKm: 15,
+    scrapsDistKm: 0,
   },
+  social: defaultSocial,
 };
 
 const STEP_ORDER: StepId[] = [
@@ -45,6 +56,7 @@ const STEP_ORDER: StepId[] = [
   'electricity',
   'water',
   'tailoring',
+  'social',
   'results',
 ];
 
@@ -70,7 +82,7 @@ function App() {
 
         // ── Migration: ensure tailoring block exists ──
         if (!parsed.tailoring) {
-          parsed.tailoring = { fabricKg: 0, scrapsKg: 0, scrapsDistKm: 15 };
+          parsed.tailoring = { fabricKg: 0, scrapsKg: 0, scrapsDistKm: 0 };
         }
 
         // ── Migration: logistics entries rename distance → distanceKm ──
@@ -92,6 +104,7 @@ function App() {
         // ── Ensure required blocks exist ──
         if (!parsed.electricity) parsed.electricity = { entries: [] };
         if (!parsed.water) parsed.water = { entries: [] };
+        if (!parsed.social) parsed.social = defaultSocial;
 
         setData(parsed);
       } catch (e) {
@@ -147,6 +160,7 @@ function App() {
       case 'electricity': return <StepElectricity {...props} />;
       case 'water':       return <StepWater {...props} />;
       case 'tailoring':   return <StepTailoring {...props} />;
+      case 'social':      return <StepSocial {...props} />;
       case 'results':     return <StepResults {...props} />;
       default:            return <StepHome {...props} />;
     }

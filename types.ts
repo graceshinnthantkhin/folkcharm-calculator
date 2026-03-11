@@ -70,6 +70,16 @@ export interface CalculatorState {
     scrapsKg: number;        // Weight of scraps sent to Bangkapi students (EQ10)
     scrapsDistKm: number;    // Distance tailors → Bangkapi Vocational Center (EQ10)
   };
+
+  // Social impact — user inputs (no hardcoding); calculator derives SI1–SI5, SI7
+  social: {
+    artisanCount: number;           // SI1 — number of artisans in this batch
+    totalArtisanHours: number;      // SI4 — total hours worked; SI3 FTE = hours ÷ 160
+    paymentToArtisansBaht: number;  // Artisan income per batch (THB)
+    totalBatchRevenueBaht: number;  // For revenue share % (SI2)
+    womenArtisansPercent: number;   // SI5 — % of artisans who are women (0–100)
+    daysPerKgWeft: number;         // SI7 — days per kg hand-spun weft (user input only)
+  };
 }
 
 // ── STEP NAVIGATION ───────────────────────────────────────────────────────────
@@ -80,6 +90,7 @@ export type StepId =
   | 'electricity'
   | 'water'
   | 'tailoring'
+  | 'social'
   | 'results';
 
 // ── STEP COMPONENT PROPS ──────────────────────────────────────────────────────
