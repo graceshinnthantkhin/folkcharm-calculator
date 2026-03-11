@@ -29,29 +29,29 @@ const StepTailoring: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900">Tailoring & Scrap Reuse</h2>
         <p className="text-gray-500 mt-2">
-          Bangkok tailoring (EQ6) and Bangkapi scrap reuse transport (EQ10).
+          Both are <strong>added</strong> to your batch’s total carbon — they increase the footprint.
         </p>
       </div>
 
-      {/* EQ6 — Bangkok Tailoring */}
+      {/* EQ6 — Tailoring */}
       <Card className="border-l-4 border-l-purple-500">
         <div className="flex items-center gap-3 mb-1">
           <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
             <Scissors size={24} />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Bangkok Tailoring</h3>
-            <p className="text-xs text-gray-500">5 home-based tailors · Bangkok · EQ6</p>
+            <h3 className="text-lg font-semibold text-gray-900">Tailoring (EQ6)</h3>
+            <p className="text-xs text-gray-500">Fabric sent to tailors for cutting/sewing — adds to total</p>
           </div>
         </div>
         <div className="flex items-start gap-2 bg-purple-50 border border-purple-100 rounded-lg px-3 py-2 mb-4 text-xs text-purple-700">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>
-            Enter the total weight of fabric sent to the Bangkok tailors.
+            Enter the total weight of fabric sent to tailors for this batch. This weight × emission factor is <strong>added</strong> to your total kg CO₂e.
           </span>
         </div>
         <Input
-          label="Fabric sent to Bangkok tailors"
+          label="Fabric sent to tailors (kg)"
           type="number"
           min="0"
           step="0.1"
@@ -70,19 +70,19 @@ const StepTailoring: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
             <Recycle size={24} />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Scrap Reuse — Bangkapi Students</h3>
-            <p className="text-xs text-gray-500">6 vocational students · Bangkapi Vocational Training Center · EQ10</p>
+            <h3 className="text-lg font-semibold text-gray-900">Scrap Reuse (EQ10)</h3>
+            <p className="text-xs text-gray-500">Transport of scraps to reuse / upcycling — adds to total</p>
           </div>
         </div>
         <div className="flex items-start gap-2 bg-teal-50 border border-teal-100 rounded-lg px-3 py-2 mb-4 text-xs text-teal-700">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>
-            Since no machines are used, the only carbon counted here is the transport to deliver the scraps.
+            The <strong>transport</strong> of scraps (weight × distance × factor) is <strong>added</strong> to your total. The reuse work itself has no extra carbon; only the delivery trip is counted.
           </span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Scraps sent to Bangkapi students"
+            label="Scraps sent to reuse (kg)"
             type="number"
             min="0"
             step="0.1"
@@ -93,18 +93,18 @@ const StepTailoring: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
             error={errors.scrapsKg}
           />
           <Input
-            label="Distance tailors → Bangkapi"
+            label="Distance to reuse location (km)"
             type="number"
             min="0"
             step="1"
-            placeholder="15"
+            placeholder="0"
             suffix="km"
             value={data.tailoring.scrapsDistKm || ''}
             onChange={(e) => updateField('scrapsDistKm', e.target.value)}
             error={errors.scrapsDistKm}
           />
         </div>
-        <p className="text-xs text-gray-400 mt-1">Default 15 km — update if you know the exact Bangkok route distance.</p>
+        <p className="text-xs text-gray-400 mt-1">Enter the distance (km) from tailors to the scrap reuse location.</p>
       </Card>
 
       <div className="flex gap-4 pt-6">
@@ -115,7 +115,7 @@ const StepTailoring: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
           onClick={() => { if (validate()) onNext(); }}
           className="flex-1 h-12 bg-gray-900 hover:bg-black text-white shadow-lg"
         >
-          Calculate Results <Calculator className="ml-2 w-5 h-5" />
+          Next: Social <Calculator className="ml-2 w-5 h-5" />
         </Button>
       </div>
     </div>

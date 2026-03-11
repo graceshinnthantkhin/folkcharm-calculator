@@ -2,9 +2,10 @@ import React, { useMemo } from 'react';
 import { StepProps } from '../types';
 import { Button, Card } from './ui/Components';
 import { calculateResults } from '../utils/calculator';
+import { downloadCsv } from '../utils/exportCsv';
 import {
   RefreshCcw, Download, CheckCircle, Leaf, Truck, Zap, Droplet,
-  Calendar, FileText, Users, Clock, Wind, Scissors, Recycle, Factory,
+  Calendar, FileText, Users, Wind, Scissors, Recycle, Factory, FileSpreadsheet,
 } from 'lucide-react';
 import { BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Bar } from 'recharts';
 
@@ -150,65 +151,87 @@ const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
         </div>
       </Card>
 
-      {/* Social Impact Card */}
+      {/* Social Impact Card — all from user input, no hardcoding */}
       <Card className="border-t-4 border-t-amber-400">
         <h3 className="text-xl font-bold text-gray-800 mb-1 flex items-center gap-2">
           <Users className="text-amber-500" size={20} /> Social Impact
         </h3>
         <p className="text-sm text-gray-500 mb-6">
-          SI1–SI3 — folkcharm.com/artisans + folkcharm.com/philosophy (confirmed)
+          Calculated from your Social step inputs (artisans, hours, income, revenue share, gender, craft days)
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {/* SI1 */}
           <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center">
             <div className="flex justify-center mb-2">
               <div className="p-2 bg-amber-100 rounded-full">
-                <Users size={24} className="text-amber-600" />
+                <Users size={22} className="text-amber-600" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-amber-700">{results.social.artisansSupported}</p>
-            <p className="text-sm font-semibold text-gray-700 mt-1">Artisans Supported</p>
-            <p className="text-xs text-gray-500 mt-1">
-              10 farmers · 30 weavers · 5 tailors · 6 Bangkapi students
+            <p className="text-2xl font-bold text-amber-700">{results.social.artisansSupported}</p>
+            <p className="text-xs font-semibold text-gray-700 mt-1">Artisans (SI1)</p>
+          </div>
+
+          {/* SI1b — Income */}
+          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-emerald-700">
+              {results.social.artisanIncomePerBatch.toLocaleString('en-US', { maximumFractionDigits: 0 })}
             </p>
+            <p className="text-xs font-semibold text-gray-700 mt-1">THB to Artisans</p>
           </div>
 
           {/* SI2 */}
-          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center">
-            <div className="flex justify-center mb-2">
-              <div className="p-2 bg-emerald-100 rounded-full">
-                <Clock size={24} className="text-emerald-600" />
-              </div>
-            </div>
-            <p className="text-3xl font-bold text-emerald-700">{fmt(results.social.skillDaysPreserved, 1)}</p>
-            <p className="text-sm font-semibold text-gray-700 mt-1">Skill Days Preserved</p>
-            <p className="text-xs text-gray-500 mt-1">
-              Days of traditional Khen-Mue hand-spinning (2.5 days/kg)
-            </p>
+          <div className="bg-teal-50 border border-teal-100 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-teal-700">{fmt(results.social.revenueSharePercent, 1)}%</p>
+            <p className="text-xs font-semibold text-gray-700 mt-1">Revenue to Makers (SI2)</p>
           </div>
 
-          {/* SI3 */}
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
-            <div className="flex justify-center mb-2">
-              <div className="p-2 bg-blue-100 rounded-full">
-                <Wind size={24} className="text-blue-600" />
-              </div>
+          {/* SI3 — FTE */}
+          <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-indigo-700">{fmt(results.social.fteJobs, 2)}</p>
+            <p className="text-xs font-semibold text-gray-700 mt-1">FTE Jobs (SI3)</p>
+            <p className="text-xs text-gray-500 mt-0.5">hours ÷ 160</p>
+          </div>
+
+          {/* SI4 */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-slate-700">{fmt(results.social.artisanWorkHours, 1)}</p>
+            <p className="text-xs font-semibold text-gray-700 mt-1">Artisan Hours (SI4)</p>
+          </div>
+
+          {/* SI5 */}
+          <div className="bg-pink-50 border border-pink-100 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-pink-700">{fmt(results.social.womenArtisansPercent, 1)}%</p>
+            <p className="text-xs font-semibold text-gray-700 mt-1">Women Artisans (SI5)</p>
+          </div>
+
+          {/* SI7 */}
+          <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-amber-700">{fmt(results.social.skillDaysPreserved, 1)}</p>
+            <p className="text-xs font-semibold text-gray-700 mt-1">Craft Days (SI7)</p>
+            <p className="text-xs text-gray-500 mt-0.5">hand-spinning preserved</p>
+          </div>
+
+          {/* Emissions avoided — important: how much they reduced by using hand looms */}
+          <div className="bg-blue-50 border-2 border-blue-400 rounded-xl p-4 text-center ring-2 ring-blue-200/50">
+            <div className="flex justify-center mb-1">
+              <Wind size={24} className="text-blue-600" />
             </div>
             <p className="text-3xl font-bold text-blue-700">{fmt(results.social.emissionsAvoided)}</p>
-            <p className="text-sm font-semibold text-gray-700 mt-1">kg CO₂e Avoided</p>
-            <p className="text-xs text-gray-500 mt-1">
-              vs factory power loom (2.730 kg CO₂e/kg · Nigam 2016 × TGO 0.4750)
-            </p>
+            <p className="text-sm font-bold text-gray-800 mt-1">kg CO₂e Avoided</p>
+            <p className="text-xs font-medium text-gray-600 mt-0.5">vs factory power loom (Thai grid)</p>
           </div>
         </div>
       </Card>
 
       {/* Actions */}
-      <div className="flex justify-center gap-4 mt-8 print:hidden">
+      <div className="flex flex-wrap justify-center gap-3 mt-8 print:hidden">
         <Button variant="outline" onClick={onBack}>Back to Edit</Button>
         <Button variant="secondary" onClick={() => window.print()}>
           <Download className="mr-2 w-4 h-4" /> Export PDF
+        </Button>
+        <Button variant="secondary" onClick={() => downloadCsv(data, results)}>
+          <FileSpreadsheet className="mr-2 w-4 h-4" /> Export CSV
         </Button>
         <Button onClick={onRestart}>
           <RefreshCcw className="mr-2 w-4 h-4" /> Start New

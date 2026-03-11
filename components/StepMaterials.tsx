@@ -115,7 +115,7 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Chain B — Green Net Warp Yarn</h3>
-              <p className="text-xs text-gray-500">~84 Fai Noi farmers, Ubon Ratchathani · Machine-ginned · Machine-spun</p>
+              <p className="text-xs text-gray-500">Machine-ginned · Machine-spun (has emissions)</p>
             </div>
           </div>
           <span className="shrink-0 text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full border border-blue-200">

@@ -39,11 +39,10 @@ const StepWater: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) =>
     <div className="max-w-4xl mx-auto min-h-[60vh] flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Water Usage</h2>
 
-      {/* Info banner */}
       <div className="w-full flex items-start gap-2 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-lg px-4 py-3 mb-8">
         <Droplets size={16} className="mt-0.5 shrink-0" />
         <span>
-          <strong>For natural dyeing only.</strong> Enter the tap water used when dyeing yarn with plant-based dyes.
+          <strong>Water usage for this batch.</strong> Add all tap water used (e.g. dyeing, washing, processing). Enter description and volume (m³) for each use.
         </span>
       </div>
 

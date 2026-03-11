@@ -39,11 +39,10 @@ const StepElectricity: React.FC<StepProps> = ({ data, updateData, onNext, onBack
     <div className="max-w-3xl mx-auto min-h-[60vh] flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Electricity Usage</h2>
 
-      {/* Critical warning */}
       <div className="w-full flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-3 mb-8">
         <AlertTriangle size={16} className="mt-0.5 shrink-0" />
         <span>
-          <strong>Bangkok studio only.</strong> Only enter electricity used in the studio — things like lights, fans, computers, and sewing machines. Do not include the hand looms.
+          <strong>Add all electricity used for this batch.</strong> Enter each source or use (e.g. studio, lights, sewing machines, equipment). Add a row per meter or per use.
         </span>
       </div>
 

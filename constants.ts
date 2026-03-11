@@ -62,23 +62,20 @@ export const SEED_COTTON_RATIO = 1.25;
 // Unit: kg CO2e per kg fabric
 export const EF_TAILOR = 0.84;
 
-// EF_POWERLOOM — Nigam 2016: 5.75 kWh/kg × TGO 0.4750 = 2.731
-// ⚠ DISPLAY ONLY — used for "emissions avoided" UI card. NOT added to total footprint.
-// Unit: kg CO2e per kg fabric
-export const EF_POWERLOOM = 2.730;
+// ── EMISSIONS AVOIDED (display only, Thai comparison) ─────────────────────────
+// Power loom electricity use: Nigam 2016, 5.75 kWh per kg fabric (industrial weaving).
+// ⚠ If Thai mill data (kWh/kg) becomes available, replace 5.75 for a Thailand-specific comparison.
+// Emissions avoided = fabric (kg) × powerLoomKwhPerKg × EF_THAI_GRID
+//    → so the comparison is explicitly vs factory power loom using THAI grid (TGO).
+// Unit: kWh per kg fabric
+export const POWER_LOOM_KWH_PER_KG = 5.75;
+// Resulting EF: kg CO2e per kg fabric (Thai grid only). NOT added to total footprint.
+export const EF_POWERLOOM = POWER_LOOM_KWH_PER_KG * EF_THAI_GRID;
 
 // ── DEADSTOCK / LEFTOVER ─────────────────────────────────────────────────────
 // ISO 14044:2006 Section 4.3.4 — zero emission allocation for reuse
 export const EF_LEFTOVER = 0.0;
 
-// ── SOCIAL IMPACT CONSTANTS ───────────────────────────────────────────────────
-// ARTISANS_TOTAL — folkcharm.com/artisans (confirmed)
-//   10 Loei farmers + 30 weavers (4 villages, Wangsaphung) +
-//   5 Bangkok tailors + 6 Bangkapi vocational students = 51
-export const ARTISANS_TOTAL = 51;
-
-// DAYS_PER_KG_WEFT — folkcharm.com/philosophy
-//   "2–3 days per kg" Khen-Mue hand-spinning. Midpoint = 2.5
-// Unit: days per kg weft yarn
-export const DAYS_PER_KG_WEFT = 2.5;
+// No hardcoded social/operational data (artisan count, days per kg, distances).
+// All such values come from user input in the Social and Logistics steps.
 
