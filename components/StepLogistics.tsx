@@ -9,7 +9,7 @@ const buildDefaultLegs = (): LogisticsEntry[] => [
   { id: crypto.randomUUID(), description: 'Gin → hand-spinners', weightKg: 0, distanceKm: 0 },
   { id: crypto.randomUUID(), description: 'Weft yarn → weavers', weightKg: 0, distanceKm: 0 },
   { id: crypto.randomUUID(), description: 'Warp mill → weavers', weightKg: 0, distanceKm: 0 },
-  { id: crypto.randomUUID(), description: 'Weavers → studio', weightKg: 0, distanceKm: 0 },
+  { id: crypto.randomUUID(), description: 'Weavers → Bangkok (Kerry Express)', weightKg: 0, distanceKm: 0 },
   { id: crypto.randomUUID(), description: 'Studio → tailors / scrap reuse', weightKg: 0, distanceKm: 0 },
 ];
 
@@ -54,7 +54,7 @@ const StepLogistics: React.FC<StepProps> = ({ data, updateData, onNext, onBack }
       <div className="text-center mb-8">
         <h2 className="text-4xl font-bold text-gray-900 mb-2">Transportation Logistics</h2>
         <p className="text-gray-500">
-          All 6 supply chain legs. Emissions = weight (kg) ÷ 1000 × distance (km) × 0.2452 kg CO₂e/t·km.
+          Add each trip: description, weight (kg), and distance (km). You can add or remove legs.
         </p>
       </div>
 

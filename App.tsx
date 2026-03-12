@@ -16,7 +16,7 @@ const defaultSocial = {
   totalArtisanHours: 0,
   paymentToArtisansBaht: 0,
   totalBatchRevenueBaht: 0,
-  womenArtisansPercent: 0,
+  womenArtisansCount: 0,
   daysPerKgWeft: 0,
 };
 
@@ -105,6 +105,13 @@ function App() {
         if (!parsed.electricity) parsed.electricity = { entries: [] };
         if (!parsed.water) parsed.water = { entries: [] };
         if (!parsed.social) parsed.social = defaultSocial;
+        // Migrate old social: womenArtisansPercent → womenArtisansCount
+        if (parsed.social && 'womenArtisansPercent' in parsed.social && !('womenArtisansCount' in parsed.social)) {
+          const n = parsed.social.artisanCount || 0;
+          const pct = parsed.social.womenArtisansPercent ?? 0;
+          parsed.social.womenArtisansCount = Math.round((n * pct) / 100);
+          delete (parsed.social as any).womenArtisansPercent;
+        }
 
         setData(parsed);
       } catch (e) {

@@ -189,8 +189,8 @@ const StepResults: React.FC<StepProps> = ({ data, onBack, onRestart }) => {
           {/* SI3 — FTE */}
           <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center">
             <p className="text-2xl font-bold text-indigo-700">{fmt(results.social.fteJobs, 2)}</p>
-            <p className="text-xs font-semibold text-gray-700 mt-1">FTE Jobs (SI3)</p>
-            <p className="text-xs text-gray-500 mt-0.5">hours ÷ 160</p>
+            <p className="text-xs font-semibold text-gray-700 mt-1">FTE jobs (SI3)</p>
+            <p className="text-xs text-gray-500 mt-0.5">Equivalent full-time jobs (hours ÷ 160)</p>
           </div>
 
           {/* SI4 */}
