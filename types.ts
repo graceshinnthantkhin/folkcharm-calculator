@@ -77,7 +77,7 @@ export interface CalculatorState {
     totalArtisanHours: number;      // SI4 — total hours worked; SI3 FTE = hours ÷ 160
     paymentToArtisansBaht: number;  // Artisan income per batch (THB)
     totalBatchRevenueBaht: number;  // For revenue share % (SI2)
-    womenArtisansPercent: number;   // SI5 — % of artisans who are women (0–100)
+    womenArtisansCount: number;     // SI5 — number of women artisans (percentage derived in calculator)
     daysPerKgWeft: number;         // SI7 — days per kg hand-spun weft (user input only)
   };
 }

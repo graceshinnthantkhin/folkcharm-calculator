@@ -89,7 +89,7 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
   // Leg 2: Gin → hand-spinners               (~20 km estimate)
   // Leg 3: Weft yarn → weavers               (~70 km, Phuluang → Wangsaphung)
   // Leg 4: Green Net mill → weavers          (data gap — mill location unknown)
-  // Leg 5: Weavers → Bangkok (Kerry Express) (600 km CONFIRMED folkcharm.com/travels)
+  // Leg 5: Weavers → Bangkok (Kerry Express)
   // Leg 6: Studio → tailors / Bangkapi       (~15 km Bangkok estimate)
   const CF_Transport = logistics.entries.reduce((acc, entry) => {
     return acc + calcTransportLeg(entry.weightKg, entry.distanceKm);
@@ -134,7 +134,7 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
     totalArtisanHours: 0,
     paymentToArtisansBaht: 0,
     totalBatchRevenueBaht: 0,
-    womenArtisansPercent: 0,
+    womenArtisansCount: 0,
     daysPerKgWeft: 0,
   };
 
@@ -150,7 +150,11 @@ export const calculateResults = (data: CalculatorState): CalculationResults => {
   const HOURS_PER_FTE_MONTH = 160;
   const fteJobs = socialInput.totalArtisanHours / HOURS_PER_FTE_MONTH;
   const artisanWorkHours = socialInput.totalArtisanHours;
-  const womenArtisansPercent = socialInput.womenArtisansPercent;
+  // SI5: derive % from number of women (support old state with womenArtisansPercent)
+  const womenArtisansPercent =
+    'womenArtisansCount' in socialInput && socialInput.artisanCount > 0
+      ? ((socialInput.womenArtisansCount ?? 0) / socialInput.artisanCount) * 100
+      : ((socialInput as any).womenArtisansPercent ?? 0);
   const skillDaysPreserved = materials.loeiCottonKg * daysPerKg;
   // Emissions avoided: compare vs factory power loom using Thai grid (TGO) only
   const emissionsAvoided = W * POWER_LOOM_KWH_PER_KG * EF_THAI_GRID;

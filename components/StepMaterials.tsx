@@ -11,7 +11,7 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
     const { fabricKg, loeiCottonKg, greenNetYarnKg, leftoverKg } = data.materials;
 
     if (!fabricKg || fabricKg <= 0) {
-      newErrors.fabricKg = 'Finished fabric weight is required — this is the functional unit for all calculations.';
+      newErrors.fabricKg = 'Please enter the total finished fabric weight (kg) for this batch.';
     }
     const totalInput = loeiCottonKg + greenNetYarnKg + leftoverKg;
     if (totalInput <= 0) {
@@ -55,11 +55,11 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Finished Fabric Weight</h3>
-            <p className="text-xs text-gray-500">ISO 14040 EQ1 — functional unit denominator for all equations</p>
+            <p className="text-xs text-gray-500">Used as the base for per-kg results</p>
           </div>
         </div>
         <Input
-          label="W_fabric_kg — Total finished fabric this batch"
+          label="Total finished fabric this batch"
           type="number"
           min="0"
           step="0.1"
@@ -79,7 +79,7 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
               <Sprout size={24} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Chain A — Loei Weft Cotton</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Chain A — Loei Cotton (hand-spun weft)</h3>
               <p className="text-xs text-gray-500">Hand-picked · Hand-ginned · Khen-Mue hand-spun · Hand-woven</p>
             </div>
           </div>
@@ -114,7 +114,7 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
               <Leaf size={24} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Chain B — Green Net Warp Yarn</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Chain B — Green Net Warp Yarn (machine-spun)</h3>
               <p className="text-xs text-gray-500">Machine-ginned · Machine-spun (has emissions)</p>
             </div>
           </div>
@@ -149,7 +149,7 @@ const StepMaterials: React.FC<StepProps> = ({ data, updateData, onNext }) => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Leftover / Deadstock</h3>
-            <p className="text-xs text-gray-500">ISO 14044 s.4.3.4 — zero emission allocation for reuse</p>
+            <p className="text-xs text-gray-500">Reused material — zero emission</p>
           </div>
         </div>
         <Input

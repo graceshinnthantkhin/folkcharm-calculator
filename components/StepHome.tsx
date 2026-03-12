@@ -102,7 +102,7 @@ const StepHome: React.FC<StepProps> = ({ data, updateData, onNext }) => {
           Supply Chain <span className="text-emerald-600">Impact Calculator</span>
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Measure Scope-3 Cradle to Gate carbon footprint and track production composition.
+          Measure your batch’s carbon footprint and social impact.
         </p>
       </div>
 

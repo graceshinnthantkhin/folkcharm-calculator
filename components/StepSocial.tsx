@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StepProps } from '../types';
 import { Input, Button, Card } from './ui/Components';
-import { ArrowLeft, Calculator, Users, DollarSign, Percent, Heart, Info } from 'lucide-react';
+import { ArrowLeft, Calculator, Users, DollarSign, Heart, Info } from 'lucide-react';
 
 const StepSocial: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -10,7 +10,7 @@ const StepSocial: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) =
     totalArtisanHours: 0,
     paymentToArtisansBaht: 0,
     totalBatchRevenueBaht: 0,
-    womenArtisansPercent: 0,
+    womenArtisansCount: 0,
     daysPerKgWeft: 0,
   };
 
@@ -20,8 +20,9 @@ const StepSocial: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) =
     if (social.totalArtisanHours < 0) newErrors.totalArtisanHours = 'Cannot be negative';
     if (social.paymentToArtisansBaht < 0) newErrors.paymentToArtisansBaht = 'Cannot be negative';
     if (social.totalBatchRevenueBaht < 0) newErrors.totalBatchRevenueBaht = 'Cannot be negative';
-    if (social.womenArtisansPercent < 0 || social.womenArtisansPercent > 100)
-      newErrors.womenArtisansPercent = 'Must be between 0 and 100';
+    if (social.womenArtisansCount < 0) newErrors.womenArtisansCount = 'Cannot be negative';
+    if (social.artisanCount > 0 && social.womenArtisansCount > social.artisanCount)
+      newErrors.womenArtisansCount = 'Cannot exceed total number of artisans';
     if (social.daysPerKgWeft < 0) newErrors.daysPerKgWeft = 'Cannot be negative';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -127,27 +128,26 @@ const StepSocial: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) =
       <Card className="border-l-4 border-l-purple-500">
         <div className="flex items-center gap-3 mb-1">
           <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
-            <Percent size={24} />
+            <Users size={24} />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Gender Empowerment (SI5)</h3>
-            <p className="text-xs text-gray-500">What share of artisans in this batch are women?</p>
+            <p className="text-xs text-gray-500">How many artisans in this batch are women?</p>
           </div>
         </div>
         <div className="flex items-start gap-2 bg-purple-50 border border-purple-100 rounded-lg px-3 py-2 mb-4 text-xs text-purple-700">
           <Info size={14} className="mt-0.5 shrink-0" />
-          <span>Enter the share of artisans in this batch who are women (0–100%).</span>
+          <span>Enter the number of women artisans in this batch. The share (%) is calculated automatically.</span>
         </div>
         <Input
-          label="Women artisans (%)"
+          label="Number of women artisans"
           type="number"
           min="0"
-          max="100"
           step="1"
-          placeholder="e.g. 85"
-          value={social.womenArtisansPercent || ''}
-          onChange={(e) => updateField('womenArtisansPercent', e.target.value)}
-          error={errors.womenArtisansPercent}
+          placeholder="e.g. 43"
+          value={social.womenArtisansCount ?? ''}
+          onChange={(e) => updateField('womenArtisansCount', e.target.value)}
+          error={errors.womenArtisansCount}
         />
       </Card>
 
@@ -159,15 +159,15 @@ const StepSocial: React.FC<StepProps> = ({ data, updateData, onNext, onBack }) =
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Cultural Craft Preservation</h3>
-            <p className="text-xs text-gray-500">SI7 — Days of traditional hand-spinning per kg weft</p>
+            <p className="text-xs text-gray-500">SI7 — Days of hand-spinning per kg Loei weft</p>
           </div>
         </div>
         <div className="flex items-start gap-2 bg-teal-50 border border-teal-100 rounded-lg px-3 py-2 mb-4 text-xs text-teal-700">
           <Info size={14} className="mt-0.5 shrink-0" />
-          <span>Enter how many days of hand-spinning (or equivalent craft time) are needed per kg of weft yarn for this batch.</span>
+          <span>How many days of hand-spinning (or equivalent craft time) are needed per kg of Loei weft yarn for this batch?</span>
         </div>
         <Input
-          label="Days per kg weft"
+          label="Days of hand-spinning per kg Loei weft"
           type="number"
           min="0"
           step="0.1"
